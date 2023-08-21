@@ -74,4 +74,8 @@ export const dirs = {
   right: k.RIGHT,
   up: k.UP,
   down: k.DOWN,
+  w: k.UP,
+  a: k.LEFT,
+  s: k.DOWN,
+  d: k.RIGHT,
 }
