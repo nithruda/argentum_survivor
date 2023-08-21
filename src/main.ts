@@ -128,19 +128,19 @@ function initTitle() {
   })
 
   box.add(text)
-  const evs = []
+  const events = []
   scene.onDestroy(() => {
-    evs.forEach((ev) => ev.cancel())
+    events.forEach((ev) => ev.cancel())
   })
 
-  evs.push(
+  events.push(
     k.onKeyPress('space', () => {
       scene.destroy()
       initGame()
     })
   )
 
-  evs.push(
+  events.push(
     k.onClick(() => {
       scene.destroy()
       initGame()
@@ -470,14 +470,14 @@ function initGame() {
     k.camPos(bean.pos)
   })
 
-  const evs = []
+  const events = []
 
   game.onDestroy(() => {
-    evs.forEach((ev) => ev.cancel())
+    events.forEach((ev) => ev.cancel())
   })
 
   for (const dir in dirs) {
-    evs.push(
+    events.push(
       k.onKeyDown(dir as Key, () => {
         if (game.paused) return
         bean.move(dirs[dir].scale(SPEED))
@@ -534,21 +534,21 @@ function initGame() {
       bag.angle = 0
     })
 
-    // bag.add([
-    // k.rect(40, 8, { radius: 4 }),
-    // k.color(colors.black),
-    // k.pos(-20, -40),
-    // ])
-    // bag.add([
-    // k.rect(40, 8, { radius: 4 }),
-    // k.color(colors.green),
-    // k.pos(-20, -40),
-    // ])
-    // bag.add([
-    // k.rect(40, 8, { radius: 4 }),
-    // k.outline(4, colors.black),
-    // k.pos(-20, -40),
-    // ])
+    bag.add([
+      k.rect(40, 8, { radius: 4 }),
+      k.color(colors.black),
+      k.pos(-20, -40),
+    ])
+    bag.add([
+      k.rect(40, 8, { radius: 4 }),
+      k.color(colors.green),
+      k.pos(-20, -40),
+    ])
+    bag.add([
+      k.rect(40, 8, { radius: 4 }),
+      k.outline(4, colors.black),
+      k.pos(-20, -40),
+    ])
 
     return bag
   }
@@ -1034,27 +1034,27 @@ function initGame() {
     })
   }
 
-  let lastTouchPos = null
+  let lastTouchPosition = null
 
-  evs.push(
+  events.push(
     k.onTouchStart(() => {
       if (game.paused) return
-      lastTouchPos = k.mousePos()
+      lastTouchPosition = k.mousePos()
     })
   )
 
-  evs.push(
+  events.push(
     k.onTouchMove(() => {
       if (game.paused) return
-      const movement = k.mousePos().sub(lastTouchPos)
+      const movement = k.mousePos().sub(lastTouchPosition)
       bean.move(movement.scale(TOUCH_SPEED))
-      lastTouchPos = k.mousePos()
+      lastTouchPosition = k.mousePos()
     })
   )
 
-  evs.push(
+  events.push(
     k.onTouchEnd(() => {
-      lastTouchPos = null
+      lastTouchPosition = null
     })
   )
 
@@ -1133,6 +1133,7 @@ function highlight(
       if (!highlighting) return
       timer += k.dt()
       this.scaleTo(k.wave(1, scale, timer * speed, (t) => -Math.cos(t)))
+
       if (timer >= cycle) {
         highlighting = false
         this.scaleTo(1)
