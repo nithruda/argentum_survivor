@@ -1,0 +1,29 @@
+{
+  "name": "argentum-survivor",
+  "version": "1.0.0",
+  "description": "Argentum Survivor",
+  "main": "main.ts",
+  "author": "Nacho Caiafa",
+  "license": "ISC",
+  "scripts": {
+    "build": "esbuild --bundle src/main.ts --outfile=www/main.js --minify",
+    "dev": "esbuild --bundle src/main.ts --outfile=www/main.js --servedir=www",
+    "bundle": "npm run build && mkdir -p dist && zip -r dist/game.zip www -x \"**/.DS_Store\"",
+    "check": "tsc",
+    "dev:desktop": "tauri dev",
+    "build:desktop": "tauri build"
+  },
+  "dependencies": {
+    "kaboom": "^3000.1.1"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^1.4.0",
+    "@typescript-eslint/eslint-plugin": "^6.4.0",
+    "@typescript-eslint/parser": "^6.4.0",
+    "esbuild": "^0.18.6",
+    "eslint": "^8.47.0",
+    "eslint-config-prettier": "^9.0.0",
+    "prettier": "^3.0.2",
+    "typescript": "^5.1.3"
+  }
+}
