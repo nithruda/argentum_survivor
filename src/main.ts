@@ -1,4 +1,4 @@
-import kaboom, {
+import {
   Vec2,
   Key,
   GameObj,
@@ -9,68 +9,40 @@ import kaboom, {
   ColorComp,
 } from 'kaboom'
 
-const k = kaboom({
-  canvas: document.querySelector('#game'),
-  font: 'happy',
-})
-
-// Keep constants in one place so we can tweak them easily
-const SPEED = 320
-const WIDTH = 1920
-const HEIGHT = 1920
-const TILE_WIDTH = 64
-const TILE_HEIGHT = 64
-const MAX_HP = 100
-const HP_BAR_WIDTH = 200
-// const EXP_BAR_WIDTH = 200
-const SWORD_SPEED = 80
-const MAX_SWORDS = 3
-const BULLET_SPEED = 800
-const DINO_BULLET_SPEED = 400
-const BUTTERFLY_SPEED = 300
-const DINO_SPEED = 80
-const GIANT_SPEED = 200
-const BAG_SPEED = 60
-const SWORD_DMG = 150
-const GUN_DMG = 100
-const DIZZY_SPEED = 1000
-const MAX_EXP_INIT = 10
-const MAX_EXP_STEP = 5
-const BOSS_MARK = 3000
-const BOSS_MARK_STEP = 3000
-const TOUCH_SPEED = 40
-
-const colors = {
-  red: k.rgb(204, 66, 94),
-  green: k.rgb(91, 166, 117),
-  orange: k.rgb(255, 184, 121),
-  black: k.rgb(31, 16, 42),
-  blue: k.rgb(109, 128, 250),
-  lightblue: k.rgb(141, 183, 255),
-  grey: k.rgb(166, 133, 159),
-}
+import { k } from '../constants/k'
+import {
+  colors,
+  SPEED,
+  WIDTH,
+  HEIGHT,
+  TILE_WIDTH,
+  TILE_HEIGHT,
+  MAX_HP,
+  HP_BAR_WIDTH,
+  SWORD_SPEED,
+  MAX_SWORDS,
+  BULLET_SPEED,
+  DINO_BULLET_SPEED,
+  BUTTERFLY_SPEED,
+  DINO_SPEED,
+  GIANT_SPEED,
+  BAG_SPEED,
+  SWORD_DMG,
+  GUN_DMG,
+  DIZZY_SPEED,
+  MAX_EXP_INIT,
+  MAX_EXP_STEP,
+  BOSS_MARK,
+  BOSS_MARK_STEP,
+  TOUCH_SPEED,
+  sprites,
+  aseprites,
+  sounds,
+  dirs,
+} from '../constants/constants'
 
 k.volume(0.5)
 k.setBackground(k.BLACK)
-
-const sprites = [
-  'title',
-  'bean',
-  'bag',
-  'dino',
-  'butterfly',
-  'giant',
-  'hpBar',
-  'expBar',
-  'toolbar',
-  'sword',
-  'gun',
-  'heart',
-  'trumpet',
-  '!',
-]
-
-const aseprites = ['field']
 
 for (const spr of sprites) {
   k.loadSprite(spr, `sprites/${spr}.png`)
@@ -84,21 +56,6 @@ k.loadBitmapFont('happy', 'sprites/happy_28x36.png', 28, 36, {
   // TODO: not working
   outline: 4,
 })
-
-const sounds = [
-  'music',
-  'music2',
-  'sword',
-  'wooosh',
-  'shoot',
-  'spring',
-  'off',
-  'alarm',
-  'powerUp',
-  'mystic',
-  'error',
-  'horn',
-]
 
 for (const snd of sounds) {
   k.loadSound(snd, `sounds/${snd}.mp3`)
@@ -118,7 +75,7 @@ for (let i = 0; i < WIDTH / TILE_WIDTH; i++) {
   }
 }
 
-// make a transparent black filter
+// Make a transparent black filter
 function makeFilter() {
   return k.make([
     k.rect(k.width(), k.height()),
@@ -133,6 +90,7 @@ function initTitle() {
   music = k.play('music', { loop: true })
   const scene = k.add([])
   scene.add(makeFilter())
+
   const title = scene.add([
     k.fixed(),
     k.z(200),
@@ -141,46 +99,54 @@ function initTitle() {
     k.sprite('title', { width: k.width() * 0.7 }),
     k.scale(1),
   ])
+
   title.onUpdate(() => {
     title.scaleTo(k.wave(1, 1.05, k.time() * 3))
   })
+
   const text = k.make([
     k.text('Press space or click to start', { size: 24 }),
     k.anchor('center'),
     k.fixed(),
     k.opacity(),
   ])
+
   const box = scene.add([
     k.rect(text.width + 24, text.height + 24, { radius: 8 }),
-    k.pos(k.center().add(0, 170)),
+    k.pos(k.center().add(0, 200)),
     k.anchor('center'),
     k.color(colors.black),
     k.fixed(),
     k.opacity(),
   ])
+
   box.onUpdate(() => {
     box.width = text.width + 24
     box.height = text.height + 24
     box.opacity = k.wave(0, 1, k.time() * 6)
     text.opacity = k.wave(0, 1, k.time() * 6)
   })
+
   box.add(text)
   const evs = []
   scene.onDestroy(() => {
     evs.forEach((ev) => ev.cancel())
   })
+
   evs.push(
     k.onKeyPress('space', () => {
       scene.destroy()
       initGame()
     })
   )
+
   evs.push(
     k.onClick(() => {
       scene.destroy()
       initGame()
     })
   )
+
   return scene
 }
 
@@ -289,12 +255,15 @@ function initGame() {
     // To make it easy we'll remove all swords and add them again (it's cheap)
     swords.removeAll()
     if (levels.sword <= 0) return
+
     const numSwords = Math.min(levels.sword, MAX_SWORDS)
     const interval = 360 / numSwords
+
     for (let i = 0; i < numSwords; i++) {
       // Use another indirect parent game object to manage the swords position
       // to the center
       const center = swords.add([k.rotate(i * interval)])
+
       const sword = center.add([
         k.pos(0, -70),
         k.sprite('sword'),
@@ -302,6 +271,7 @@ function initGame() {
         k.area({ shape: new k.Rect(k.vec2(0, -10), 5, 40) }),
         { dmg: SWORD_DMG },
       ])
+
       sword.onCollide('enemy', (e) => {
         k.play('sword', {
           // Randomly detune the sound effect to add some variation when multiple
@@ -311,16 +281,19 @@ function initGame() {
         e.hurt(sword.dmg)
       })
     }
+
     // When level is more than 4, we increase the rotate speed
     if (levels.sword >= 4) {
       swords.speed = SWORD_SPEED * (levels.sword - 2)
     }
+
     updateToolbar()
   }
 
   function initGuns() {
     guns.removeAll()
     if (levels.gun <= 0) return
+
     const rate = levels.gun >= 3 ? 1 / (levels.gun - 1) : 1
     const gun = guns.add([
       k.pos(60, 0),
@@ -328,6 +301,7 @@ function initGame() {
       k.anchor('center'),
       k.timer(),
     ])
+
     gun.loop(rate, () => {
       game.add([
         k.rect(24, 8, { radius: 2 }),
@@ -341,6 +315,7 @@ function initGame() {
         { dmg: GUN_DMG },
       ])
     })
+
     // TODO: clean
     if (levels.gun >= 2) {
       const gun = guns.add([
@@ -349,6 +324,7 @@ function initGame() {
         k.anchor('center'),
         k.timer(),
       ])
+
       gun.loop(rate, () => {
         game.add([
           k.rect(24, 8, { radius: 2 }),
@@ -363,12 +339,14 @@ function initGame() {
         ])
       })
     }
+
     updateToolbar()
   }
 
   function initTrumpet() {
     trumpets.removeAll()
     if (levels.trumpet <= 0) return
+
     const trumpet = trumpets.add([
       k.pos(0, 0),
       k.sprite('trumpet'),
@@ -376,6 +354,7 @@ function initGame() {
       k.scale(),
       highlight(),
     ])
+
     trumpet.loop(3, async () => {
       // TODO: find all enemies within a radius
       for (const e of game.get('enemy')) {
@@ -404,6 +383,7 @@ function initGame() {
       effect.tween(1, 0, 1, (o) => (effect.opacity = o))
       effect.wait(1, () => effect.destroy())
     })
+
     updateToolbar()
   }
 
@@ -486,13 +466,6 @@ function initGame() {
     initTitle()
   })
 
-  const dirs = {
-    left: k.LEFT,
-    right: k.RIGHT,
-    up: k.UP,
-    down: k.DOWN,
-  }
-
   k.onUpdate(() => {
     k.camPos(bean.pos)
   })
@@ -520,7 +493,7 @@ function initGame() {
     )
   }
 
-  // TODO: dont spawn on bean or outside
+  // TODO: Dont spawn on bean or outside
   function getSpawnPos() {
     return bean.pos.add(k.rand(-400, 400), k.rand(-400, 400))
   }
@@ -541,21 +514,26 @@ function initGame() {
       enemy({ dmg: 50 }),
       'minion',
     ])
+
     bag.onStateUpdate('move', async () => {
       const dir = bean.pos.sub(bag.pos).unit()
       bag.move(dir.scale(BAG_SPEED))
     })
+
     bag.onStateEnter('dizzy', async () => {
       await bag.wait(2)
       if (bag.state !== 'dizzy') return
       bag.enterState('move')
     })
+
     bag.onStateUpdate('dizzy', async () => {
       bag.angle += k.dt() * DIZZY_SPEED
     })
+
     bag.onStateEnd('dizzy', async () => {
       bag.angle = 0
     })
+
     // bag.add([
     // k.rect(40, 8, { radius: 4 }),
     // k.color(colors.black),
@@ -571,6 +549,7 @@ function initGame() {
     // k.outline(4, colors.black),
     // k.pos(-20, -40),
     // ])
+
     return bag
   }
 
@@ -590,24 +569,29 @@ function initGame() {
       enemy({ dmg: 50 }),
       'minion',
     ])
+
     butterfly.onUpdate(() => {
       butterfly.pos.x += k.dt() * k.rand(-1, 1) * 100
       butterfly.pos.y += k.dt() * k.rand(-1, 1) * 100
     })
+
     butterfly.onStateEnter('idle', async () => {
       await butterfly.wait(2)
       if (butterfly.state !== 'idle') return
       butterfly.enterState('attack')
     })
+
     butterfly.onStateEnter('attack', async () => {
       const dir = bean.pos.sub(butterfly.pos).unit()
       const dest = bean.pos.add(dir.scale(100))
       const dis = bean.pos.dist(butterfly.pos)
       const t = dis / BUTTERFLY_SPEED
+
       k.play('wooosh', {
         detune: k.rand(-300, 300),
         volume: Math.min(1, 320 / dis),
       })
+
       await butterfly.tween(
         butterfly.pos,
         dest,
@@ -617,17 +601,21 @@ function initGame() {
       )
       butterfly.enterState('idle')
     })
+
     butterfly.onStateEnter('dizzy', async () => {
       await butterfly.wait(2)
       if (butterfly.state !== 'dizzy') return
       butterfly.enterState('idle')
     })
+
     butterfly.onStateUpdate('dizzy', async () => {
       butterfly.angle += k.dt() * DIZZY_SPEED
     })
+
     butterfly.onStateEnd('dizzy', async () => {
       butterfly.angle = 0
     })
+
     return butterfly
   }
 
@@ -647,14 +635,17 @@ function initGame() {
       enemy({ dmg: 50 }),
       'minion',
     ])
+
     dino.onUpdate(() => {
       dino.flipX = bean.pos.x < dino.pos.x
     })
+
     dino.onStateEnter('idle', async () => {
       await dino.wait(1)
       if (dino.state !== 'idle') return
       dino.enterState('attack')
     })
+
     dino.onStateEnter('attack', async () => {
       game.add([
         k.rect(24, 8, { radius: 2 }),
@@ -676,6 +667,7 @@ function initGame() {
       if (dino.state !== 'attack') return
       dino.enterState('move')
     })
+
     dino.onStateUpdate('move', async () => {
       const dir = bean.pos.sub(dino.pos).unit()
       dino.move(dir.scale(DINO_SPEED))
@@ -686,6 +678,7 @@ function initGame() {
         dino.enterState('idle')
       }
     })
+
     dino.onStateEnter('dizzy', async () => {
       await dino.wait(2)
       if (dino.state !== 'dizzy') return
@@ -697,6 +690,7 @@ function initGame() {
     dino.onStateEnd('dizzy', async () => {
       dino.angle = 0
     })
+
     return dino
   }
 
@@ -717,7 +711,9 @@ function initGame() {
         bounce(),
       ])
     }
+
     await game.wait(2)
+
     for (const m of minions) {
       k.addKaboom(m.pos)
       m.destroy()
@@ -742,22 +738,27 @@ function initGame() {
       enemy({ dmg: 80, exp: 20 }),
       'boss',
     ])
+
     boss.onDeath(() => {
       isBossFighting = false
       music.paused = true
       music = k.play('music', { loop: true })
     })
+
     boss.onStateEnter('idle', async () => {
       await boss.wait(1)
       boss.enterState(`charge${k.choose([1, 2])}`)
     })
+
     boss.onStateEnter('charge1', async () => {
       await boss.wait(1)
       boss.enterState('attack1')
     })
+
     boss.onStateUpdate('charge1', () => {
       boss.pos = boss.pos.add(k.rand(-5, 5), k.rand(-5, 5))
     })
+
     boss.onStateEnter('attack1', async () => {
       const num = 20
       for (let i = 0; i < num; i++) {
@@ -803,15 +804,18 @@ function initGame() {
         opacity: k.wave(0, 1, k.time() * 12),
         color: colors.black,
       }
+
       k.drawLine({ p1: p1, p2: p2, ...opts })
       k.drawLine({ p1: p2, p2: p3, ...opts })
       k.drawLine({ p1: p2, p2: p4, ...opts })
     })
+
     boss.onStateEnter('attack2', async () => {
       const dir = bean.pos.sub(boss.pos).unit()
       const dest = bean.pos.add(dir.scale(100))
       const dis = bean.pos.dist(boss.pos)
       const t = dis / (GIANT_SPEED * 3)
+
       k.play('error')
       await boss.tween(
         boss.pos,
@@ -822,14 +826,17 @@ function initGame() {
       )
       boss.enterState('idle')
     })
+
     boss.onStateEnter('move', async () => {
       await boss.wait(1)
       boss.enterState('idle')
     })
+
     boss.onStateUpdate('move', async () => {
       const dir = bean.pos.sub(boss.pos).unit()
       boss.move(dir.scale(GIANT_SPEED))
     })
+
     // TODO: clean
     boss.add([
       k.rect(60, 12, { radius: 6 }),
@@ -844,6 +851,7 @@ function initGame() {
     hp.onUpdate(() => {
       hp.width = k.lerp(hp.width, (52 * boss.hp()) / maxHP, k.dt() * 12)
     })
+
     return boss
   }
 
@@ -905,7 +913,7 @@ function initGame() {
 
   // const expBar = addBar(
   //   k.vec2(24, 90),
-  //   EXP_BAR_WIDTH,
+  // EXP_BAR_WIDTH,
   //   colors.lightblue,
   //   'expBar',
   //   () => exp / maxExp
@@ -1009,14 +1017,17 @@ function initGame() {
         k.burp()
       })
     }
+
     addItem(k.width() / 2, 'sword', () => {
       levels.sword += 1
       initSwords()
     })
+
     addItem(k.width() / 2 - 200, 'gun', () => {
       levels.gun += 1
       initGuns()
     })
+
     addItem(k.width() / 2 + 200, 'trumpet', () => {
       levels.trumpet += 1
       initTrumpet()
