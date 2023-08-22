@@ -4,66 +4,93 @@ import { initGame } from './initGame'
 import { makeFilter } from './makeFilter'
 
 export function initTitle({ music }) {
-	music.paused = true
-	music = k.play('music', { loop: true })
-	const scene = k.add([])
-	scene.add(makeFilter())
+	try {
+		const {
+			play,
+			add,
+			fixed,
+			z,
+			scale,
+			sprite,
+			width,
+			center,
+			anchor,
+			pos,
+			time,
+			wave,
+			opacity,
+			rect,
+			make,
+			color,
+			onKeyPress,
+			onClick,
+			text,
+		} = k
 
-	const title = scene.add([
-		k.fixed(),
-		k.z(200),
-		k.anchor('center'),
-		k.pos(k.center().add(0, -60)),
-		k.sprite('title', { width: k.width() * 0.7 }),
-		k.scale(1),
-	])
+		music.paused = true
+		music = play('music', { loop: true })
+		const scene = add([])
+		scene.add(makeFilter())
 
-	title.onUpdate(() => {
-		title.scaleTo(k.wave(1, 1.05, k.time() * 3))
-	})
+		const title = scene.add([
+			fixed(),
+			z(200),
+			anchor('center'),
+			pos(center().add(0, -60)),
+			sprite('title', { width: width() * 0.7 }),
+			scale(1),
+		])
 
-	const text = k.make([
-		k.text('Press space or click to start', { size: 24 }),
-		k.anchor('center'),
-		k.fixed(),
-		k.opacity(),
-	])
-
-	const box = scene.add([
-		k.rect(text.width + 24, text.height + 24, { radius: 8 }),
-		k.pos(k.center().add(0, 200)),
-		k.anchor('center'),
-		k.color(colors.black),
-		k.fixed(),
-		k.opacity(),
-	])
-
-	box.onUpdate(() => {
-		box.width = text.width + 24
-		box.height = text.height + 24
-		box.opacity = k.wave(0, 1, k.time() * 6)
-		text.opacity = k.wave(0, 1, k.time() * 6)
-	})
-
-	box.add(text)
-	const events = []
-	scene.onDestroy(() => {
-		events.forEach(ev => ev.cancel())
-	})
-
-	events.push(
-		k.onKeyPress('space', () => {
-			scene.destroy()
-			initGame({ music })
+		title.onUpdate(() => {
+			title.scaleTo(wave(1, 1.05, time() * 3))
 		})
-	)
 
-	events.push(
-		k.onClick(() => {
-			scene.destroy()
-			initGame({ music })
+		const titleText = make([
+			text('Press space or click to start', { size: 24 }),
+			anchor('center'),
+			fixed(),
+			opacity(),
+		])
+
+		const box = scene.add([
+			rect(titleText.width + 24, titleText.height + 24, { radius: 8 }),
+			pos(center().add(0, 200)),
+			anchor('center'),
+			color(colors.black),
+			fixed(),
+			opacity(),
+		])
+
+		box.onUpdate(() => {
+			box.width = titleText.width + 24
+			box.height = titleText.height + 24
+			box.opacity = wave(0, 1, time() * 6)
+			titleText.opacity = wave(0, 1, time() * 6)
 		})
-	)
 
-	return scene
+		box.add(titleText)
+		const events = []
+		scene.onDestroy(() => {
+			events.forEach(ev => ev.cancel())
+		})
+
+		events.push(
+			onKeyPress('space', () => {
+				scene.destroy()
+				initGame({ music })
+			})
+		)
+
+		events.push(
+			onClick(() => {
+				scene.destroy()
+				initGame({ music })
+			})
+		)
+
+		return scene
+	} catch (error) {
+		console.error(error)
+		throw new Error('Something went wrong while trying to init title', error)
+	}
 }

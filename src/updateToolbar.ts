@@ -1,31 +1,27 @@
 import { colors } from '../constants/constants'
 import { k } from '../constants/k'
 
-// Update the toolbar to reflect current levels. To make it easy we'll just
-// remove everything and initialize items again.
+// Update the toolbar to reflect current levels. To make it easy we'll just remove everything and initialize items again.
 
 export function updateToolbar({ levels, toolbar }) {
 	try {
+		const { sprite, anchor, scale, pos, fixed, circle, color, text } = k
+
 		toolbar.removeAll()
 		let x = 36
+
 		for (const tool in levels) {
 			const level = levels[tool]
 			if (level <= 0) continue
-			toolbar.add([
-				k.sprite(tool),
-				k.pos(x, -38),
-				k.fixed(),
-				k.anchor('center'),
-				k.scale(0.8),
-			])
+			toolbar.add([sprite(tool), pos(x, -38), fixed(), anchor('center'), scale(0.8)])
 			const dot = toolbar.add([
-				k.circle(12),
-				k.fixed(),
-				k.pos(x + 22, -24),
-				k.anchor('center'),
-				k.color(colors.black),
+				circle(12),
+				fixed(),
+				pos(x + 22, -24),
+				anchor('center'),
+				color(colors.black),
 			])
-			dot.add([k.text(level + '', { size: 16 }), k.fixed(), k.anchor('center')])
+			dot.add([text(`${level}`, { size: 16 }), fixed(), anchor('center')])
 			x += 64
 		}
 	} catch (error) {

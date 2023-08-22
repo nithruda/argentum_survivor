@@ -5,6 +5,8 @@ import { updateToolbar } from './updateToolbar'
 export // Add swords mechanics
 function initSwords({ swords, levels, toolbar }) {
 	try {
+		const { rotate, pos, sprite, area, Rect, rand, vec2, play, anchor } = k
+
 		// To make it easy we'll remove all swords and add them again (it's cheap)
 		swords.removeAll()
 		if (levels.sword <= 0) return
@@ -15,21 +17,21 @@ function initSwords({ swords, levels, toolbar }) {
 		for (let i = 0; i < numSwords; i++) {
 			// Use another indirect parent game object to manage the swords position
 			// to the center
-			const center = swords.add([k.rotate(i * interval)])
+			const center = swords.add([rotate(i * interval)])
 
 			const sword = center.add([
-				k.pos(0, -70),
-				k.sprite('sword'),
-				k.anchor('center'),
-				k.area({ shape: new k.Rect(k.vec2(0, -10), 5, 40) }),
+				pos(0, -70),
+				sprite('sword'),
+				anchor('center'),
+				area({ shape: new Rect(vec2(0, -10), 5, 40) }),
 				{ dmg: SWORD_DMG },
 			])
 
 			sword.onCollide('enemy', e => {
-				k.play('sword', {
+				play('sword', {
 					// Randomly detune the sound effect to add some variation when multiple
 					// happening sequentially
-					detune: k.rand(-300, 300),
+					detune: rand(-300, 300),
 				})
 				e.hurt(sword.dmg)
 			})

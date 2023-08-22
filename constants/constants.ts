@@ -1,5 +1,7 @@
 import { k } from './k'
 
+const { rgb, LEFT, RIGHT, UP, DOWN } = k
+
 export const SPEED = 320
 export const WIDTH = 1920
 export const HEIGHT = 1920
@@ -26,13 +28,13 @@ export const BOSS_MARK_STEP = 3000
 export const TOUCH_SPEED = 40
 
 export const colors = {
-	red: k.rgb(204, 66, 94),
-	green: k.rgb(91, 166, 117),
-	orange: k.rgb(255, 184, 121),
-	black: k.rgb(31, 16, 42),
-	blue: k.rgb(109, 128, 250),
-	lightblue: k.rgb(141, 183, 255),
-	grey: k.rgb(166, 133, 159),
+	red: rgb(204, 66, 94),
+	green: rgb(91, 166, 117),
+	orange: rgb(255, 184, 121),
+	black: rgb(31, 16, 42),
+	blue: rgb(109, 128, 250),
+	lightblue: rgb(141, 183, 255),
+	grey: rgb(166, 133, 159),
 }
 
 export const sprites = [
@@ -70,12 +72,12 @@ export const sounds = [
 ]
 
 export const dirs = {
-	left: k.LEFT,
-	right: k.RIGHT,
-	up: k.UP,
-	down: k.DOWN,
-	w: k.UP,
-	a: k.LEFT,
-	s: k.DOWN,
-	d: k.RIGHT,
+	left: LEFT,
+	right: RIGHT,
+	up: UP,
+	down: DOWN,
+	w: UP,
+	a: LEFT,
+	s: DOWN,
+	d: RIGHT,
 }
