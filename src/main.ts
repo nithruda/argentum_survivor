@@ -10,37 +10,49 @@ import {
 import { k } from '../constants/k'
 import { initTitle } from './initTitle'
 
-k.volume(0.5)
-k.setBackground(k.BLACK)
+const {
+	volume,
+	setBackground,
+	BLACK,
+	loadSprite,
+	loadAseprite,
+	add,
+	play,
+	pos,
+	loadBitmapFont,
+	loadSound,
+	randi,
+	sprite,
+} = k
+
+volume(0.5)
+setBackground(BLACK)
 
 for (const spr of sprites) {
-	k.loadSprite(spr, `sprites/${spr}.png`)
+	loadSprite(spr, `sprites/${spr}.png`)
 }
 
 for (const spr of aseprites) {
-	k.loadAseprite(spr, `sprites/${spr}.png`, `sprites/${spr}.json`)
+	loadAseprite(spr, `sprites/${spr}.png`, `sprites/${spr}.json`)
 }
 
-k.loadBitmapFont('happy', 'sprites/happy_28x36.png', 28, 36, {
+loadBitmapFont('happy', 'sprites/happy_28x36.png', 28, 36, {
 	// TODO: not working
 	outline: 4,
 })
 
 for (const snd of sounds) {
-	k.loadSound(snd, `sounds/${snd}.mp3`)
+	loadSound(snd, `sounds/${snd}.mp3`)
 }
 
-const music = k.play('music', {
+const music = play('music', {
 	loop: true,
 })
 
 // Add the background tiles
 for (let i = 0; i < WIDTH / TILE_WIDTH; i++) {
 	for (let j = 0; j < HEIGHT / TILE_HEIGHT; j++) {
-		k.add([
-			k.pos(j * TILE_WIDTH, i * TILE_HEIGHT),
-			k.sprite('field', { frame: k.randi(0, 4) }),
-		])
+		add([pos(j * TILE_WIDTH, i * TILE_HEIGHT), sprite('field', { frame: randi(0, 4) })])
 	}
 }
 
