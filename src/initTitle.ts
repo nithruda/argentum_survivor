@@ -32,28 +32,44 @@ export function initTitle({ music }) {
 		const scene = add([])
 		scene.add(makeFilter())
 
-		const title = scene.add([
+		const titleBackground = scene.add([
 			fixed(),
-			z(200),
+			z(0),
 			anchor('center'),
 			pos(center().add(0, -60)),
-			sprite('title', { width: width() * 0.7 }),
+			sprite('background', { width: width() }),
 			scale(1),
 		])
 
-		title.onUpdate(() => {
-			title.scaleTo(wave(1, 1.05, time() * 3))
+		titleBackground.onUpdate(() => {
+			titleBackground.scaleTo(wave(1, 1.01, time() * 3))
 		})
 
 		const titleText = make([
+			text('Argentum Survivor', { size: 70 }),
+			anchor('center'),
+			fixed(),
+			opacity(),
+		])
+
+		const subTitleText = make([
 			text('Press space or click to start', { size: 24 }),
 			anchor('center'),
 			fixed(),
 			opacity(),
 		])
 
-		const box = scene.add([
+		const titleBox = scene.add([
 			rect(titleText.width + 24, titleText.height + 24, { radius: 8 }),
+			pos(center().add(0, -200)),
+			anchor('center'),
+			color(colors.black),
+			fixed(),
+			opacity(0.8),
+		])
+
+		const subTitleBox = scene.add([
+			rect(subTitleText.width + 24, subTitleText.height + 24, { radius: 8 }),
 			pos(center().add(0, 200)),
 			anchor('center'),
 			color(colors.black),
@@ -61,14 +77,20 @@ export function initTitle({ music }) {
 			opacity(),
 		])
 
-		box.onUpdate(() => {
-			box.width = titleText.width + 24
-			box.height = titleText.height + 24
-			box.opacity = wave(0, 1, time() * 6)
-			titleText.opacity = wave(0, 1, time() * 6)
+		titleBox.onUpdate(() => {
+			titleBox.width = subTitleText.width + 440
+			titleBox.height = subTitleText.height + 75
 		})
 
-		box.add(titleText)
+		subTitleBox.onUpdate(() => {
+			subTitleBox.width = subTitleText.width + 24
+			subTitleBox.height = subTitleText.height + 24
+			subTitleBox.opacity = wave(0, 1, time() * 6)
+			subTitleText.opacity = wave(0, 1, time() * 6)
+		})
+
+		titleBox.add(titleText)
+		subTitleBox.add(subTitleText)
 		const events = []
 		scene.onDestroy(() => {
 			events.forEach(ev => ev.cancel())

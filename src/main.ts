@@ -6,6 +6,7 @@ import {
 	aseprites,
 	sounds,
 	sprites,
+	images,
 } from '../constants/constants'
 import { k } from '../constants/k'
 import { initTitle } from './initTitle'
@@ -30,6 +31,10 @@ setBackground(BLACK)
 
 for (const spr of sprites) {
 	loadSprite(spr, `sprites/${spr}.png`)
+}
+
+for (const spr of images) {
+	loadSprite(spr, `images/${spr}.png`)
 }
 
 for (const spr of aseprites) {

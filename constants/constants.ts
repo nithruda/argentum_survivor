@@ -38,7 +38,6 @@ export const colors = {
 }
 
 export const sprites = [
-	'title',
 	'bean',
 	'bag',
 	'dino',
@@ -81,3 +80,5 @@ export const dirs = {
 	s: DOWN,
 	d: RIGHT,
 }
+
+export const images = ['background']
