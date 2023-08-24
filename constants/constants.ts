@@ -39,7 +39,7 @@ export const colors = {
 
 export const sprites = [
 	'player',
-	'bag',
+	'elephant',
 	'dino',
 	'butterfly',
 	'giant',
