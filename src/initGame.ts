@@ -26,12 +26,12 @@ import { k } from '../constants/k'
 import { bounce } from './bounce'
 import { highlight } from './highlight'
 import { initSwords } from './initSwords'
-import { initTitle } from './initTitle'
 import { makeFilter } from './makeFilter'
 import { updateToolbar } from './updateToolbar'
 import { initGuns } from './initGuns'
 import { initTrumpet } from './initTrumpet'
 import { getSpawnPosition } from './getSpawnPosition'
+import { initGameOver } from './initGameOver'
 
 export function initGame({ music }) {
 	// All objects in the main game scene will all be children of this "game" game
@@ -88,15 +88,22 @@ export function initGame({ music }) {
 		k.z(200),
 	])
 
-	// Add some feedbacks when player is hurt - show a short red screen filter effect
-	// and screen shake
+	// Add a screen filter to UI that turns red when player gets hit
+	const healFilter = ui.add([
+		k.fixed(),
+		k.rect(k.width(), k.height()),
+		k.color(colors.green),
+		k.opacity(0),
+		k.z(200),
+	])
+
+	// Add some feedbacks when player is hurt showing a short red screen filter effect, and screen shake
 	player.onHurt(() => {
-		// Cap the damage filter opacity to 0.7
-		dmgFilter.opacity = Math.min(0.7, dmgFilter.opacity + k.dt() * 2.5)
-		k.shake(5)
+		dmgFilter.opacity = Math.min(0.5, dmgFilter.opacity + k.dt() * 2.5)
+		k.shake(3)
 	})
 
-	// Always recover to 0
+	// Always recover to 0 damage filter
 	dmgFilter.onUpdate(() => {
 		dmgFilter.opacity = Math.max(0, dmgFilter.opacity - k.dt())
 	})
@@ -104,23 +111,28 @@ export function initGame({ music }) {
 	// Add feedbacks when we heal
 	player.onHeal(() => {
 		if (player.hp() > MAX_HP) player.setHP(MAX_HP)
-		// highlight() is from the custom component highlight(), which makes the game
-		// objects scale big a bit and then recover to normal
+		healFilter.opacity = Math.min(0.5, healFilter.opacity + k.dt() * 2.5)
+		// Custom component highlight makes the game objects scale big a bit and then recover to normal
 		hpBar.highlight()
 		player.highlight()
+	})
+
+	// Always recover to 0 health filter
+	healFilter.onUpdate(() => {
+		healFilter.opacity = Math.max(0, healFilter.opacity - k.dt())
 	})
 
 	// A parent game object to manage all swords
 	const swords = player.add([k.rotate(0), { speed: SWORD_SPEED }])
 
-	// The swords will be constantly rotating, we only have to rotate the parent
-	// game object!
+	// The swords will be constantly rotating, we only have to rotate the parent game object!
 	swords.onUpdate(() => {
 		swords.angle += k.dt() * swords.speed
 	})
 
 	// Parent game object for all guns
 	const guns = player.add([])
+
 	// Parent game object for all trumpets
 	const trumpets = player.add([])
 
@@ -131,11 +143,9 @@ export function initGame({ music }) {
 		trumpet: 0,
 	}
 
-	k.onCollide('bullet', 'enemy', (b, e) => {
-		e.hurt(b.dmg)
-		if (e.is('boss')) {
-			b.destroy()
-		}
+	k.onCollide('bullet', 'enemy', (bullet, enemy) => {
+		enemy.hurt(bullet.dmg)
+		if (enemy.is('boss')) bullet.destroy()
 	})
 
 	// The toolbar UI element to show the current levels on all weapons
@@ -154,32 +164,31 @@ export function initGame({ music }) {
 	updateToolbar({ levels, toolbar })
 
 	// TODO: this still runs when game is paused
-	player.onCollideUpdate('enemy', e => {
+	player.onCollideUpdate('enemy', enemy => {
 		if (game.paused) return
-		player.hurt(k.dt() * e.dmg)
+		player.hurt(k.dt() * enemy.dmg)
 	})
 
-	const hurtSnd = k.play('alarm', { loop: true, paused: true })
+	const hurtSound = k.play('alarm', { loop: true, paused: true })
 
 	player.onCollide('enemy', () => {
-		hurtSnd.play()
+		hurtSound.play()
 	})
 
 	player.onCollideEnd('enemy', () => {
-		// const cols = player.getCollisions()
-		hurtSnd.paused = true
+		hurtSound.paused = true
 	})
 
-	player.onCollide('enemybullet', e => {
-		player.hurt(e.dmg)
-		e.destroy()
+	player.onCollide('enemybullet', bullet => {
+		player.hurt(bullet.dmg)
+		bullet.destroy()
 	})
 
 	player.onDeath(() => {
 		game.paused = true
-		hurtSnd.paused = true
+		hurtSound.paused = true
 		game.destroy()
-		initTitle({ music })
+		initGameOver({ music })
 	})
 
 	k.onUpdate(() => {
@@ -189,7 +198,7 @@ export function initGame({ music }) {
 	const events = []
 
 	game.onDestroy(() => {
-		events.forEach(ev => ev.cancel())
+		events.forEach(event => event.cancel())
 	})
 
 	for (const dir in dirs) {
@@ -209,10 +218,10 @@ export function initGame({ music }) {
 		)
 	}
 
-	function spawnBag() {
-		const bag = game.add([
+	function spawnElephant() {
+		const elephant = game.add([
 			k.pos(getSpawnPosition({ player })),
-			k.sprite('bag'),
+			k.sprite('elephant'),
 			k.anchor('center'),
 			k.scale(),
 			k.rotate(0),
@@ -226,30 +235,34 @@ export function initGame({ music }) {
 			'minion',
 		])
 
-		bag.onStateUpdate('move', async () => {
-			const dir = player.pos.sub(bag.pos).unit()
-			bag.move(dir.scale(BAG_SPEED))
+		elephant.onStateUpdate('move', async () => {
+			const dir = player.pos.sub(elephant.pos).unit()
+			elephant.move(dir.scale(BAG_SPEED))
 		})
 
-		bag.onStateEnter('dizzy', async () => {
-			await bag.wait(2)
-			if (bag.state !== 'dizzy') return
-			bag.enterState('move')
+		elephant.onStateEnter('dizzy', async () => {
+			await elephant.wait(2)
+			if (elephant.state !== 'dizzy') return
+			elephant.enterState('move')
 		})
 
-		bag.onStateUpdate('dizzy', async () => {
-			bag.angle += k.dt() * DIZZY_SPEED
+		elephant.onStateUpdate('dizzy', async () => {
+			elephant.angle += k.dt() * DIZZY_SPEED
 		})
 
-		bag.onStateEnd('dizzy', async () => {
-			bag.angle = 0
+		elephant.onStateEnd('dizzy', async () => {
+			elephant.angle = 0
 		})
 
-		bag.add([k.rect(40, 8, { radius: 4 }), k.color(colors.black), k.pos(-20, -40)])
-		bag.add([k.rect(40, 8, { radius: 4 }), k.color(colors.green), k.pos(-20, -40)])
-		bag.add([k.rect(40, 8, { radius: 4 }), k.outline(4, colors.black), k.pos(-20, -40)])
+		elephant.add([k.rect(40, 8, { radius: 4 }), k.color(colors.black), k.pos(-20, -40)])
+		elephant.add([k.rect(40, 8, { radius: 4 }), k.color(colors.green), k.pos(-20, -40)])
+		elephant.add([
+			k.rect(40, 8, { radius: 4 }),
+			k.outline(4, colors.black),
+			k.pos(-20, -40),
+		])
 
-		return bag
+		return elephant
 	}
 
 	function spawnButterfly() {
@@ -396,11 +409,11 @@ export function initGame({ music }) {
 		if (isBossFighting) return
 		isBossFighting = true
 		const minions = game.get('minion')
-		for (const m of minions) {
-			m.paused = true
+		for (const minion of minions) {
+			minion.paused = true
 			game.add([
 				k.sprite('!'),
-				k.pos(m.pos.add(40, -40)),
+				k.pos(minion.pos.add(40, -40)),
 				k.scale(),
 				k.opacity(1),
 				k.lifespan(2, { fade: 0.5 }),
@@ -410,15 +423,17 @@ export function initGame({ music }) {
 
 		await game.wait(2)
 
-		for (const m of minions) {
-			k.addKaboom(m.pos)
-			m.destroy()
+		for (const minion of minions) {
+			k.addKaboom(minion.pos)
+			minion.destroy()
 		}
+
 		const maxHP = 2000
 		await game.wait(1)
 		k.play('mystic')
 		music.paused = true
 		music = k.play('music2', { loop: true })
+
 		const boss = game.add([
 			k.pos(getSpawnPosition({ player })),
 			k.sprite('giant'),
@@ -539,7 +554,7 @@ export function initGame({ music }) {
 
 	game.loop(0.5, () => {
 		if (isBossFighting) return
-		k.choose([spawnBag, spawnButterfly, spawnDino])()
+		k.choose([spawnElephant, spawnButterfly, spawnDino])()
 	})
 
 	// When picking up hearts, heal the player
@@ -561,7 +576,7 @@ export function initGame({ music }) {
 		])
 	}
 
-	function addBar(pos, width, color, sprite, getPerc) {
+	function addBar(pos: Vec2, width: number, color, sprite, getPerc) {
 		const bg = ui.add([
 			k.pos(pos),
 			k.scale(),
