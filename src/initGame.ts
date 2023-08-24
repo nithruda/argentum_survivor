@@ -69,9 +69,9 @@ export function initGame({ music }) {
 	})
 
 	// Add our main character
-	const bean = game.add([
+	const player = game.add([
 		k.pos(WIDTH / 2, HEIGHT / 2),
-		k.sprite('bean'),
+		k.sprite('player'),
 		k.anchor('center'),
 		k.area({ scale: 0.8 }),
 		k.health(100),
@@ -88,9 +88,9 @@ export function initGame({ music }) {
 		k.z(200),
 	])
 
-	// Add some feedbacks when bean is hurt - show a short red screen filter effect
+	// Add some feedbacks when player is hurt - show a short red screen filter effect
 	// and screen shake
-	bean.onHurt(() => {
+	player.onHurt(() => {
 		// Cap the damage filter opacity to 0.7
 		dmgFilter.opacity = Math.min(0.7, dmgFilter.opacity + k.dt() * 2.5)
 		k.shake(5)
@@ -102,16 +102,16 @@ export function initGame({ music }) {
 	})
 
 	// Add feedbacks when we heal
-	bean.onHeal(() => {
-		if (bean.hp() > MAX_HP) bean.setHP(MAX_HP)
+	player.onHeal(() => {
+		if (player.hp() > MAX_HP) player.setHP(MAX_HP)
 		// highlight() is from the custom component highlight(), which makes the game
 		// objects scale big a bit and then recover to normal
 		hpBar.highlight()
-		bean.highlight()
+		player.highlight()
 	})
 
 	// A parent game object to manage all swords
-	const swords = bean.add([k.rotate(0), { speed: SWORD_SPEED }])
+	const swords = player.add([k.rotate(0), { speed: SWORD_SPEED }])
 
 	// The swords will be constantly rotating, we only have to rotate the parent
 	// game object!
@@ -120,9 +120,9 @@ export function initGame({ music }) {
 	})
 
 	// Parent game object for all guns
-	const guns = bean.add([])
+	const guns = player.add([])
 	// Parent game object for all trumpets
-	const trumpets = bean.add([])
+	const trumpets = player.add([])
 
 	// Current player level on all weapons, start with level 1 on sword
 	const levels = {
@@ -150,32 +150,32 @@ export function initGame({ music }) {
 
 	initSwords({ swords, levels, toolbar })
 	initGuns({ guns, levels, game, toolbar })
-	initTrumpet({ trumpets, levels, game, bean, toolbar })
+	initTrumpet({ trumpets, levels, game, player, toolbar })
 	updateToolbar({ levels, toolbar })
 
 	// TODO: this still runs when game is paused
-	bean.onCollideUpdate('enemy', e => {
+	player.onCollideUpdate('enemy', e => {
 		if (game.paused) return
-		bean.hurt(k.dt() * e.dmg)
+		player.hurt(k.dt() * e.dmg)
 	})
 
 	const hurtSnd = k.play('alarm', { loop: true, paused: true })
 
-	bean.onCollide('enemy', () => {
+	player.onCollide('enemy', () => {
 		hurtSnd.play()
 	})
 
-	bean.onCollideEnd('enemy', () => {
-		// const cols = bean.getCollisions()
+	player.onCollideEnd('enemy', () => {
+		// const cols = player.getCollisions()
 		hurtSnd.paused = true
 	})
 
-	bean.onCollide('enemybullet', e => {
-		bean.hurt(e.dmg)
+	player.onCollide('enemybullet', e => {
+		player.hurt(e.dmg)
 		e.destroy()
 	})
 
-	bean.onDeath(() => {
+	player.onDeath(() => {
 		game.paused = true
 		hurtSnd.paused = true
 		game.destroy()
@@ -183,7 +183,7 @@ export function initGame({ music }) {
 	})
 
 	k.onUpdate(() => {
-		k.camPos(bean.pos)
+		k.camPos(player.pos)
 	})
 
 	const events = []
@@ -196,22 +196,22 @@ export function initGame({ music }) {
 		events.push(
 			k.onKeyDown(dir as Key, () => {
 				if (game.paused) return
-				bean.move(dirs[dir].scale(SPEED))
-				const xMin = bean.width / 2
-				const yMin = bean.height / 2
-				const xMax = WIDTH - bean.width / 2
-				const yMax = HEIGHT - bean.height / 2
-				if (bean.pos.x < xMin) bean.pos.x = xMin
-				if (bean.pos.y < yMin) bean.pos.y = yMin
-				if (bean.pos.x > xMax) bean.pos.x = xMax
-				if (bean.pos.y > yMax) bean.pos.y = yMax
+				player.move(dirs[dir].scale(SPEED))
+				const xMin = player.width / 2
+				const yMin = player.height / 2
+				const xMax = WIDTH - player.width / 2
+				const yMax = HEIGHT - player.height / 2
+				if (player.pos.x < xMin) player.pos.x = xMin
+				if (player.pos.y < yMin) player.pos.y = yMin
+				if (player.pos.x > xMax) player.pos.x = xMax
+				if (player.pos.y > yMax) player.pos.y = yMax
 			})
 		)
 	}
 
 	function spawnBag() {
 		const bag = game.add([
-			k.pos(getSpawnPosition({ bean })),
+			k.pos(getSpawnPosition({ player })),
 			k.sprite('bag'),
 			k.anchor('center'),
 			k.scale(),
@@ -227,7 +227,7 @@ export function initGame({ music }) {
 		])
 
 		bag.onStateUpdate('move', async () => {
-			const dir = bean.pos.sub(bag.pos).unit()
+			const dir = player.pos.sub(bag.pos).unit()
 			bag.move(dir.scale(BAG_SPEED))
 		})
 
@@ -254,7 +254,7 @@ export function initGame({ music }) {
 
 	function spawnButterfly() {
 		const butterfly = game.add([
-			k.pos(getSpawnPosition({ bean })),
+			k.pos(getSpawnPosition({ player })),
 			k.sprite('butterfly'),
 			k.anchor('center'),
 			k.scale(),
@@ -281,9 +281,9 @@ export function initGame({ music }) {
 		})
 
 		butterfly.onStateEnter('attack', async () => {
-			const dir = bean.pos.sub(butterfly.pos).unit()
-			const dest = bean.pos.add(dir.scale(100))
-			const dis = bean.pos.dist(butterfly.pos)
+			const dir = player.pos.sub(butterfly.pos).unit()
+			const dest = player.pos.add(dir.scale(100))
+			const dis = player.pos.dist(butterfly.pos)
 			const t = dis / BUTTERFLY_SPEED
 
 			k.play('wooosh', {
@@ -320,7 +320,7 @@ export function initGame({ music }) {
 
 	function spawnDino() {
 		const dino = game.add([
-			k.pos(getSpawnPosition({ bean })),
+			k.pos(getSpawnPosition({ player })),
 			k.sprite('dino'),
 			k.anchor('center'),
 			k.scale(),
@@ -336,7 +336,7 @@ export function initGame({ music }) {
 		])
 
 		dino.onUpdate(() => {
-			dino.flipX = bean.pos.x < dino.pos.x
+			dino.flipX = player.pos.x < dino.pos.x
 		})
 
 		dino.onStateEnter('idle', async () => {
@@ -357,7 +357,7 @@ export function initGame({ music }) {
 				'enemybullet',
 				{ dmg: 20 },
 			])
-			const dis = bean.pos.dist(dino.pos)
+			const dis = player.pos.dist(dino.pos)
 			k.play('shoot', {
 				detune: k.rand(-300, 300),
 				volume: Math.min(1, 320 / dis),
@@ -368,9 +368,9 @@ export function initGame({ music }) {
 		})
 
 		dino.onStateUpdate('move', async () => {
-			const dir = bean.pos.sub(dino.pos).unit()
+			const dir = player.pos.sub(dino.pos).unit()
 			dino.move(dir.scale(DINO_SPEED))
-			if (Math.abs(bean.pos.y - dino.pos.y) < 50 && bean.pos.dist(dino.pos) < 400) {
+			if (Math.abs(player.pos.y - dino.pos.y) < 50 && player.pos.dist(dino.pos) < 400) {
 				dino.enterState('idle')
 			}
 		})
@@ -420,7 +420,7 @@ export function initGame({ music }) {
 		music.paused = true
 		music = k.play('music2', { loop: true })
 		const boss = game.add([
-			k.pos(getSpawnPosition({ bean })),
+			k.pos(getSpawnPosition({ player })),
 			k.sprite('giant'),
 			k.anchor('center'),
 			k.scale(),
@@ -486,11 +486,11 @@ export function initGame({ music }) {
 		})
 
 		boss.onStateDraw('charge2', () => {
-			const diff = bean.pos.sub(boss.pos).unit()
+			const diff = player.pos.sub(boss.pos).unit()
 			const p1 = diff.scale(80)
 			const p2 = diff.scale(240)
-			const p3 = p2.add(k.Vec2.fromAngle(boss.pos.angle(bean.pos) + 45).scale(40))
-			const p4 = p2.add(k.Vec2.fromAngle(boss.pos.angle(bean.pos) - 45).scale(40))
+			const p3 = p2.add(k.Vec2.fromAngle(boss.pos.angle(player.pos) + 45).scale(40))
+			const p4 = p2.add(k.Vec2.fromAngle(boss.pos.angle(player.pos) - 45).scale(40))
 			const opts = {
 				width: 4,
 				opacity: k.wave(0, 1, k.time() * 12),
@@ -503,9 +503,9 @@ export function initGame({ music }) {
 		})
 
 		boss.onStateEnter('attack2', async () => {
-			const dir = bean.pos.sub(boss.pos).unit()
-			const dest = bean.pos.add(dir.scale(100))
-			const dis = bean.pos.dist(boss.pos)
+			const dir = player.pos.sub(boss.pos).unit()
+			const dest = player.pos.add(dir.scale(100))
+			const dis = player.pos.dist(boss.pos)
 			const t = dis / (GIANT_SPEED * 3)
 
 			k.play('error')
@@ -519,7 +519,7 @@ export function initGame({ music }) {
 		})
 
 		boss.onStateUpdate('move', async () => {
-			const dir = bean.pos.sub(boss.pos).unit()
+			const dir = player.pos.sub(boss.pos).unit()
 			boss.move(dir.scale(GIANT_SPEED))
 		})
 
@@ -542,10 +542,11 @@ export function initGame({ music }) {
 		k.choose([spawnBag, spawnButterfly, spawnDino])()
 	})
 
-	bean.onCollide('heart', h => {
+	// When picking up hearts, heal the player
+	player.onCollide('heart', hearth => {
 		k.play('powerUp')
-		bean.heal(10)
-		h.destroy()
+		player.heal(10)
+		hearth.destroy()
 	})
 
 	function addHeart(pos: Vec2) {
@@ -586,7 +587,7 @@ export function initGame({ music }) {
 		HP_BAR_WIDTH,
 		colors.green,
 		'hpBar',
-		() => bean.hp() / MAX_HP
+		() => player.hp() / MAX_HP
 	)
 
 	// const expBar = addBar(
@@ -709,7 +710,7 @@ export function initGame({ music }) {
 
 		addItem(k.width() / 2 + 200, 'trumpet', () => {
 			levels.trumpet += 1
-			initTrumpet({ trumpets, levels, game, bean, toolbar })
+			initTrumpet({ trumpets, levels, game, player, toolbar })
 		})
 	}
 
@@ -726,7 +727,7 @@ export function initGame({ music }) {
 		k.onTouchMove(() => {
 			if (game.paused) return
 			const movement = k.mousePos().sub(lastTouchPosition)
-			bean.move(movement.scale(TOUCH_SPEED))
+			player.move(movement.scale(TOUCH_SPEED))
 			lastTouchPosition = k.mousePos()
 		})
 	)

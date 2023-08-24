@@ -12,7 +12,8 @@
     "check": "tsc",
     "dev:desktop": "tauri dev",
     "build:desktop": "tauri build",
-    "test": "jest"
+    "test": "jest",
+    "prettier": "prettier --write ."
   },
   "dependencies": {
     "kaboom": "^3000.1.1",

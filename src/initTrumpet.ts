@@ -3,7 +3,7 @@ import { k } from '../constants/k'
 import { highlight } from './highlight'
 import { updateToolbar } from './updateToolbar'
 
-export function initTrumpet({ trumpets, levels, game, bean, toolbar }) {
+export function initTrumpet({ trumpets, levels, game, player, toolbar }) {
 	try {
 		const { pos, sprite, timer, scale, play, circle, wave, z, time, opacity, color } = k
 
@@ -21,13 +21,13 @@ export function initTrumpet({ trumpets, levels, game, bean, toolbar }) {
 		trumpet.loop(3, async () => {
 			// TODO: find all enemies within a radius
 			for (const e of game.get('enemy')) {
-				if (e.pos.dist(bean.pos) <= 240) {
+				if (e.pos.dist(player.pos) <= 240) {
 					e.enterState('dizzy')
 				}
 			}
 			trumpet.highlight()
 			play('horn')
-			const effect = bean.add([circle(0), timer(), opacity(0.3), color(), z(-100)])
+			const effect = player.add([circle(0), timer(), opacity(0.3), color(), z(-100)])
 			effect.onUpdate(() => {
 				const c1 = colors.lightblue
 				const c2 = colors.green
