@@ -9,6 +9,7 @@ import {
 	DINO_BULLET_SPEED,
 	DINO_SPEED,
 	DIZZY_SPEED,
+	EXP_BAR_WIDTH,
 	GIANT_SPEED,
 	HEIGHT,
 	HP_BAR_WIDTH,
@@ -114,6 +115,7 @@ export function initGame({ music }) {
 		healFilter.opacity = Math.min(0.5, healFilter.opacity + k.dt() * 2.5)
 		// Custom component highlight makes the game objects scale big a bit and then recover to normal
 		hpBar.highlight()
+		expBar.highlight()
 		player.highlight()
 	})
 
@@ -163,15 +165,15 @@ export function initGame({ music }) {
 	initTrumpet({ trumpets, levels, game, player, toolbar })
 	updateToolbar({ levels, toolbar })
 
-	// TODO: this still runs when game is paused
 	player.onCollideUpdate('enemy', enemy => {
 		if (game.paused) return
 		player.hurt(k.dt() * enemy.dmg)
 	})
 
-	const hurtSound = k.play('alarm', { loop: true, paused: true })
+	const hurtSound = k.play('alarm', { loop: false, paused: true })
 
 	player.onCollide('enemy', () => {
+		if (game.paused) return
 		hurtSound.play()
 	})
 
@@ -605,13 +607,13 @@ export function initGame({ music }) {
 		() => player.hp() / MAX_HP
 	)
 
-	// const expBar = addBar(
-	//   k.vec2(24, 90),
-	// EXP_BAR_WIDTH,
-	//   colors.lightblue,
-	//   'expBar',
-	//   () => exp / maxExp
-	// )
+	const expBar = addBar(
+		k.vec2(24, 90),
+		EXP_BAR_WIDTH,
+		colors.lightblue,
+		'expBar',
+		() => exp / maxExp
+	)
 
 	let score = 0
 	let exp = 0
@@ -670,7 +672,7 @@ export function initGame({ music }) {
 					}
 					exp += opts.exp ?? 1
 					if (exp >= maxExp) {
-						exp = exp - maxExp
+						exp -= maxExp
 						presentUpgrades()
 						maxExp += MAX_EXP_STEP
 					}
