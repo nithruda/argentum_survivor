@@ -12,9 +12,9 @@ import { k } from '../constants/k'
 import { initTitle } from './initTitle'
 
 const {
+	BLACK,
 	volume,
 	setBackground,
-	BLACK,
 	loadSprite,
 	loadAseprite,
 	add,
@@ -33,21 +33,20 @@ for (const spr of sprites) {
 	loadSprite(spr, `sprites/${spr}.png`)
 }
 
-for (const spr of images) {
-	loadSprite(spr, `images/${spr}.png`)
+for (const img of images) {
+	loadSprite(img, `images/${img}.png`)
 }
 
-for (const spr of aseprites) {
-	loadAseprite(spr, `sprites/${spr}.png`, `sprites/${spr}.json`)
+for (const aspr of aseprites) {
+	loadAseprite(aspr, `sprites/${aspr}.png`, `sprites/${aspr}.json`)
 }
 
 loadBitmapFont('happy', 'sprites/happy_28x36.png', 28, 36, {
-	// TODO: not working
 	outline: 4,
 })
 
-for (const snd of sounds) {
-	loadSound(snd, `sounds/${snd}.mp3`)
+for (const sound of sounds) {
+	loadSound(sound, `sounds/${sound}.mp3`)
 }
 
 const music = play('music', {

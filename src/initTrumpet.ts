@@ -18,13 +18,16 @@ export function initTrumpet({ trumpets, levels, game, player, toolbar }) {
 			highlight(),
 		])
 
+		const enemies = game.get('enemy')
+
 		trumpet.loop(3, async () => {
 			// TODO: find all enemies within a radius
-			for (const e of game.get('enemy')) {
-				if (e.pos.dist(player.pos) <= 240) {
-					e.enterState('dizzy')
+			for (const enemy of enemies) {
+				if (enemy.pos.dist(player.pos) <= 240) {
+					enemy.enterState('dizzy')
 				}
 			}
+
 			trumpet.highlight()
 			play('horn')
 			const effect = player.add([circle(0), timer(), opacity(0.3), color(), z(-100)])
@@ -36,8 +39,8 @@ export function initTrumpet({ trumpets, levels, game, player, toolbar }) {
 				effect.color.g = wave(c1.g, c2.g, time() * s)
 				effect.color.b = wave(c1.b, c2.b, time() * s)
 			})
-			effect.tween(0, 300, 1, r => (effect.radius = r))
-			effect.tween(1, 0, 1, o => (effect.opacity = o))
+			effect.tween(0, 300, 1, radius => (effect.radius = radius))
+			effect.tween(1, 0, 1, opacity => (effect.opacity = opacity))
 			effect.wait(1, () => effect.destroy())
 		})
 
