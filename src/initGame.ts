@@ -35,6 +35,17 @@ import { getSpawnPosition } from './getSpawnPosition'
 import { initGameOver } from './initGameOver'
 
 export function initGame({ music }) {
+	const {
+		isKeyDown,
+		onKeyDown,
+		onKeyPress,
+		onCollide,
+		onUpdate,
+		onTouchStart,
+		onTouchEnd,
+		onTouchMove,
+	} = k
+
 	// All objects in the main game scene will all be children of this "game" game
 	// object, so can more easily manage them. For example, we just need to toggle
 	// game.paused to pause everything, useful for menues and stuff.
@@ -55,7 +66,7 @@ export function initGame({ music }) {
 
 	// Pause game when user press escape, we just toggle the paused / hidden props
 	// the "game" parent game object and "menu" parent game object
-	k.onKeyPress('escape', () => {
+	onKeyPress('escape', () => {
 		if (game.paused && !menu.hidden) {
 			music.paused = false
 			game.paused = false
@@ -72,13 +83,62 @@ export function initGame({ music }) {
 	// Add our main character
 	const player = game.add([
 		k.pos(WIDTH / 2, HEIGHT / 2),
-		k.sprite('player'),
+		k.sprite('human'),
 		k.anchor('center'),
 		k.area({ scale: 0.8 }),
 		k.health(100),
 		k.scale(),
 		highlight(),
+		k.state('idleDown'),
 	])
+
+	player.onStateEnter('idleDown', () => {
+		player.play('idleDown')
+	})
+
+	player.onStateEnter('idleUp', () => {
+		player.play('idleUp')
+	})
+
+	player.onStateEnter('idleLeft', () => {
+		player.play('idleLeft')
+	})
+
+	player.onStateEnter('idleRight', () => {
+		player.play('idleRight')
+	})
+
+	player.onStateEnter('walkDown', () => {
+		player.play('walkDown', {
+			onEnd: () => {
+				player.play('idleDown')
+			},
+		})
+	})
+
+	player.onStateEnter('walkUp', () => {
+		player.play('walkUp', {
+			onEnd: () => {
+				player.play('idleUp')
+			},
+		})
+	})
+
+	player.onStateEnter('walkLeft', () => {
+		player.play('walkLeft', {
+			onEnd: () => {
+				player.play('idleLeft')
+			},
+		})
+	})
+
+	player.onStateEnter('walkRight', () => {
+		player.play('walkRight', {
+			onEnd: () => {
+				player.play('idleRight')
+			},
+		})
+	})
 
 	// Add a screen filter to UI that turns red when player gets hit
 	const dmgFilter = ui.add([
@@ -145,7 +205,7 @@ export function initGame({ music }) {
 		trumpet: 0,
 	}
 
-	k.onCollide('bullet', 'enemy', (bullet, enemy) => {
+	onCollide('bullet', 'enemy', (bullet, enemy) => {
 		enemy.hurt(bullet.dmg)
 		if (enemy.is('boss')) bullet.destroy()
 	})
@@ -193,7 +253,7 @@ export function initGame({ music }) {
 		initGameOver({ music })
 	})
 
-	k.onUpdate(() => {
+	onUpdate(() => {
 		k.camPos(player.pos)
 	})
 
@@ -205,8 +265,25 @@ export function initGame({ music }) {
 
 	for (const dir in dirs) {
 		events.push(
-			k.onKeyDown(dir as Key, () => {
+			onKeyDown(dir as Key, () => {
 				if (game.paused) return
+				const left = isKeyDown('a') || isKeyDown('left')
+				const right = isKeyDown('d') || isKeyDown('right')
+				const up = isKeyDown('w') || isKeyDown('up')
+				const down = isKeyDown('s') || isKeyDown('down')
+
+				if (up) {
+					player.enterState('walkUp')
+				} else if (left) {
+					player.enterState('walkLeft')
+				} else if (down) {
+					player.enterState('walkDown')
+				} else if (right) {
+					player.enterState('walkRight')
+				} else {
+					player.enterState(`idle${dir[0].toUpperCase()}${dir.slice(1)}`)
+				}
+
 				player.move(dirs[dir].scale(SPEED))
 				const xMin = player.width / 2
 				const yMin = player.height / 2
@@ -220,10 +297,10 @@ export function initGame({ music }) {
 		)
 	}
 
-	function spawnElephant() {
-		const elephant = game.add([
+	function spawnSkeleton() {
+		const skeleton = game.add([
 			k.pos(getSpawnPosition({ player })),
-			k.sprite('elephant'),
+			k.sprite('skeleton'),
 			k.anchor('center'),
 			k.scale(),
 			k.rotate(0),
@@ -237,34 +314,34 @@ export function initGame({ music }) {
 			'minion',
 		])
 
-		elephant.onStateUpdate('move', async () => {
-			const dir = player.pos.sub(elephant.pos).unit()
-			elephant.move(dir.scale(BAG_SPEED))
+		skeleton.onStateUpdate('move', async () => {
+			const dir = player.pos.sub(skeleton.pos).unit()
+			skeleton.move(dir.scale(BAG_SPEED))
 		})
 
-		elephant.onStateEnter('dizzy', async () => {
-			await elephant.wait(2)
-			if (elephant.state !== 'dizzy') return
-			elephant.enterState('move')
+		skeleton.onStateEnter('dizzy', async () => {
+			await skeleton.wait(2)
+			if (skeleton.state !== 'dizzy') return
+			skeleton.enterState('move')
 		})
 
-		elephant.onStateUpdate('dizzy', async () => {
-			elephant.angle += k.dt() * DIZZY_SPEED
+		skeleton.onStateUpdate('dizzy', async () => {
+			skeleton.angle += k.dt() * DIZZY_SPEED
 		})
 
-		elephant.onStateEnd('dizzy', async () => {
-			elephant.angle = 0
+		skeleton.onStateEnd('dizzy', async () => {
+			skeleton.angle = 0
 		})
 
-		elephant.add([k.rect(40, 8, { radius: 4 }), k.color(colors.black), k.pos(-20, -40)])
-		elephant.add([k.rect(40, 8, { radius: 4 }), k.color(colors.green), k.pos(-20, -40)])
-		elephant.add([
+		skeleton.add([k.rect(40, 8, { radius: 4 }), k.color(colors.black), k.pos(-20, -40)])
+		skeleton.add([k.rect(40, 8, { radius: 4 }), k.color(colors.green), k.pos(-20, -40)])
+		skeleton.add([
 			k.rect(40, 8, { radius: 4 }),
 			k.outline(4, colors.black),
 			k.pos(-20, -40),
 		])
 
-		return elephant
+		return skeleton
 	}
 
 	function spawnButterfly() {
@@ -556,7 +633,7 @@ export function initGame({ music }) {
 
 	game.loop(0.5, () => {
 		if (isBossFighting) return
-		k.choose([spawnElephant, spawnButterfly, spawnDino])()
+		k.choose([spawnSkeleton, spawnButterfly, spawnDino])()
 	})
 
 	// When picking up hearts, heal the player
@@ -734,14 +811,14 @@ export function initGame({ music }) {
 	let lastTouchPosition = null
 
 	events.push(
-		k.onTouchStart(() => {
+		onTouchStart(() => {
 			if (game.paused) return
 			lastTouchPosition = k.mousePos()
 		})
 	)
 
 	events.push(
-		k.onTouchMove(() => {
+		onTouchMove(() => {
 			if (game.paused) return
 			const movement = k.mousePos().sub(lastTouchPosition)
 			player.move(movement.scale(TOUCH_SPEED))
@@ -750,7 +827,7 @@ export function initGame({ music }) {
 	)
 
 	events.push(
-		k.onTouchEnd(() => {
+		onTouchEnd(() => {
 			lastTouchPosition = null
 		})
 	)

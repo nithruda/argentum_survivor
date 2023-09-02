@@ -16,6 +16,7 @@ const {
 	volume,
 	setBackground,
 	loadSprite,
+	loadSpriteAtlas,
 	loadAseprite,
 	add,
 	play,
@@ -30,7 +31,26 @@ volume(0.5)
 setBackground(BLACK)
 
 for (const spr of sprites) {
-	loadSprite(spr, `sprites/${spr}.png`)
+	loadSpriteAtlas(`sprites/${spr}.png`, {
+		[spr]: {
+			x: 0,
+			y: 0,
+			width: 150,
+			height: 180,
+			sliceX: 6,
+			sliceY: 4,
+			anims: {
+				idleDown: { from: 0, to: 0 },
+				idleUp: { from: 6, to: 6 },
+				idleLeft: { from: 12, to: 12 },
+				idleRight: { from: 17, to: 17 },
+				walkDown: { from: 0, to: 5, speed: 14, loop: true },
+				walkUp: { from: 6, to: 11, speed: 14, loop: true },
+				walkLeft: { from: 12, to: 16, speed: 14, loop: true },
+				walkRight: { from: 18, to: 22, speed: 14, loop: true },
+			},
+		},
+	})
 }
 
 for (const img of images) {
@@ -50,7 +70,7 @@ for (const sound of sounds) {
 }
 
 const music = play('music', {
-	loop: true,
+	// loop: true,
 })
 
 // Add the background tiles
