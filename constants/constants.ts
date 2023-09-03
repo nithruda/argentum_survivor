@@ -5,8 +5,8 @@ const { rgb, LEFT, RIGHT, UP, DOWN } = k
 export const SPEED = 320
 export const WIDTH = 1920
 export const HEIGHT = 1920
-export const TILE_WIDTH = 64
-export const TILE_HEIGHT = 64
+export const TILE_WIDTH = 190
+export const TILE_HEIGHT = 190
 export const MAX_HP = 100
 export const HP_BAR_WIDTH = 200
 export const EXP_BAR_WIDTH = 200
@@ -38,8 +38,8 @@ export const colors = {
 }
 
 export const sprites = [
-	'player',
-	'elephant',
+	'human',
+	'skeleton',
 	'dino',
 	'butterfly',
 	'giant',
@@ -80,5 +80,7 @@ export const dirs = {
 	s: DOWN,
 	d: RIGHT,
 }
+
+export const fonts = ['alegreya', 'cardo', 'livvic']
 
 export const images = ['background']
