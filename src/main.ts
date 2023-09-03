@@ -32,26 +32,7 @@ volume(0.5)
 setBackground(BLACK)
 
 for (const spr of sprites) {
-	loadSpriteAtlas(`sprites/${spr}.png`, {
-		[spr]: {
-			x: 0,
-			y: 0,
-			width: 256,
-			height: 256,
-			sliceX: 8,
-			sliceY: 5,
-			anims: {
-				idleDown: { from: 0, to: 0 },
-				idleUp: { from: 9, to: 9 },
-				idleLeft: { from: 12, to: 12 },
-				idleRight: { from: 16, to: 16 },
-				walkDown: { from: 0, to: 7, speed: 14, loop: true },
-				walkUp: { from: 10, to: 15, speed: 14, loop: true },
-				walkLeft: { from: 16, to: 23, speed: 14, loop: true },
-				walkRight: { from: 24, to: 31, speed: 14, loop: true },
-			},
-		},
-	})
+	k.loadSprite(spr, `sprites/${spr}.png`)
 }
 
 loadSpriteAtlas(`sprites/human.png`, {
