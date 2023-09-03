@@ -295,14 +295,6 @@ export function initGame({ music }) {
 			skeleton.angle = 0
 		})
 
-		skeleton.add([k.rect(40, 8, { radius: 4 }), k.color(colors.black), k.pos(-20, -40)])
-		skeleton.add([k.rect(40, 8, { radius: 4 }), k.color(colors.green), k.pos(-20, -40)])
-		skeleton.add([
-			k.rect(40, 8, { radius: 4 }),
-			k.outline(4, colors.black),
-			k.pos(-20, -40),
-		])
-
 		return skeleton
 	}
 
