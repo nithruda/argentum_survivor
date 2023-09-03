@@ -8,6 +8,14 @@ export const loadSprites = () => {
 		k.loadSprite(spr, `sprites/${spr}.png`)
 	}
 
+	for (const img of images) {
+		loadSprite(img, `images/${img}.png`)
+	}
+
+	for (const aspr of aseprites) {
+		loadAseprite(aspr, `sprites/${aspr}.png`, `sprites/${aspr}.json`)
+	}
+
 	loadSpriteAtlas(`sprites/human.png`, {
 		human: {
 			x: 0,
@@ -101,7 +109,7 @@ export const loadSprites = () => {
 			sliceX: 8,
 			sliceY: 1,
 			anims: {
-				flash: { from: 0, to: 8, speed: 14, loop: true },
+				flashAnim: { from: 0, to: 8, speed: 14, loop: true },
 			},
 		},
 	})
@@ -121,11 +129,17 @@ export const loadSprites = () => {
 		},
 	})
 
-	for (const img of images) {
-		loadSprite(img, `images/${img}.png`)
-	}
-
-	for (const aspr of aseprites) {
-		loadAseprite(aspr, `sprites/${aspr}.png`, `sprites/${aspr}.json`)
-	}
+	loadSpriteAtlas(`sprites/enemyMagic.png`, {
+		skeletonWizardMagic: {
+			x: 0,
+			y: 265,
+			width: 512,
+			height: 320,
+			sliceX: 8,
+			sliceY: 1,
+			anims: {
+				magicAnim: { from: 0, to: 7, speed: 14, loop: true },
+			},
+		},
+	})
 }
