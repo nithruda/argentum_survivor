@@ -618,7 +618,7 @@ export function initGame({ music }) {
 	})
 
 	// When picking up hearts, heal the player
-	player.onCollide('heart', hearth => {
+	player.onCollide('healthPotion', hearth => {
 		k.play('powerUp')
 		player.heal(10)
 		hearth.destroy()
@@ -629,10 +629,10 @@ export function initGame({ music }) {
 			k.pos(pos),
 			k.scale(),
 			k.anchor('center'),
-			k.sprite('heart'),
+			k.sprite('healthPotion'),
 			k.area(),
 			bounce({ keep: true }),
-			'heart',
+			'healthPotion',
 		])
 	}
 

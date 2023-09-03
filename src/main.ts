@@ -133,6 +133,21 @@ loadSpriteAtlas(`sprites/flash.png`, {
 	},
 })
 
+loadSpriteAtlas(`sprites/items2.png`, {
+	cup: {
+		x: 0,
+		y: 0,
+		width: 34,
+		height: 34,
+	},
+	healthPotion: {
+		x: 450,
+		y: 34,
+		width: 34,
+		height: 34,
+	},
+})
+
 for (const img of images) {
 	loadSprite(img, `images/${img}.png`)
 }
