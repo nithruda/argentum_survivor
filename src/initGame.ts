@@ -33,6 +33,7 @@ import { initGuns } from './initGuns'
 import { initTrumpet } from './initTrumpet'
 import { getSpawnPosition } from './getSpawnPosition'
 import { initGameOver } from './initGameOver'
+import { getDirection } from './getDirection'
 
 export function initGame({ music }) {
 	const {
@@ -316,7 +317,15 @@ export function initGame({ music }) {
 
 		skeleton.onStateUpdate('move', async () => {
 			const dir = player.pos.sub(skeleton.pos).unit()
+			let previousPosition = skeleton.pos.clone()
+			const direction = getDirection(dir)
+			if (direction === 'up') skeleton.play('walkUp')
+			else if (direction === 'left') skeleton.play('walkLeft')
+			else if (direction === 'right') skeleton.play('walkRight')
+			else if (direction === 'down') skeleton.play('walkDown')
+			else skeleton.play('walkDown')
 			skeleton.move(dir.scale(BAG_SPEED))
+			previousPosition = skeleton.pos.clone()
 		})
 
 		skeleton.onStateEnter('dizzy', async () => {
