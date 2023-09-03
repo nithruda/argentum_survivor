@@ -221,8 +221,10 @@ export function initGame({ music }) {
 		events.push(
 			onKeyDown(dir as Key, () => {
 				if (game.paused) return
-
 				player.move(dirs[dir].scale(SPEED))
+				//fix moving fast when going in diagonals
+				// player.move(dirs[dir].scale(k.dt() * SPEED))
+
 				const xMin = player.width / 2
 				const yMin = player.height / 2
 				const xMax = WIDTH - player.width / 2
