@@ -45,7 +45,6 @@ export const sprites = [
 	'toolbar',
 	'sword',
 	'gun',
-	'heart',
 	'trumpet',
 	'!',
 ]
