@@ -119,6 +119,20 @@ loadSpriteAtlas(`sprites/skeletonWizard.png`, {
 	},
 })
 
+loadSpriteAtlas(`sprites/flash.png`, {
+	flash: {
+		x: 0,
+		y: 0,
+		width: 119,
+		height: 17,
+		sliceX: 8,
+		sliceY: 1,
+		anims: {
+			flash: { from: 0, to: 8, speed: 14, loop: true },
+		},
+	},
+})
+
 for (const img of images) {
 	loadSprite(img, `images/${img}.png`)
 }
