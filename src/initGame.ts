@@ -34,6 +34,7 @@ import { initTrumpet } from './initTrumpet'
 import { getSpawnPosition } from './getSpawnPosition'
 import { initGameOver } from './initGameOver'
 import { getDirection } from './getDirection'
+import { addKaboom } from './addKaboom'
 
 export function initGame({ music }) {
 	const {
@@ -481,7 +482,9 @@ export function initGame({ music }) {
 		await game.wait(2)
 
 		for (const minion of minions) {
-			k.addKaboom(minion.pos)
+			// Show custom damage sprite or disintegrate the enemy
+			// k.addKaboom(minion.pos)
+			addKaboom(minion.pos)
 			minion.destroy()
 		}
 
@@ -719,7 +722,9 @@ export function initGame({ music }) {
 				})
 				this.onDeath(() => {
 					this.destroy()
-					k.addKaboom(this.pos)
+					// Show custom damage sprite or disintegrate the enemy
+					// k.addKaboom(this.pos)
+					addKaboom(this.pos)
 					setScore(s => s + (this.is('boss') ? 2000 : 100))
 					if (score >= bossMark) {
 						bossMark += BOSS_MARK_STEP + 2000
