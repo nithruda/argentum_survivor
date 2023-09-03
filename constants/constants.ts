@@ -14,7 +14,7 @@ export const SWORD_SPEED = 80
 export const MAX_SWORDS = 3
 export const BULLET_SPEED = 800
 export const DINO_BULLET_SPEED = 400
-export const BUTTERFLY_SPEED = 300
+export const SPIDER_SPEED = 300
 export const DINO_SPEED = 80
 export const GIANT_SPEED = 200
 export const BAG_SPEED = 60
@@ -38,10 +38,7 @@ export const colors = {
 }
 
 export const sprites = [
-	'human',
-	'skeleton',
 	'dino',
-	'butterfly',
 	'giant',
 	'hpBar',
 	'expBar',

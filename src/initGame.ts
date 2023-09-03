@@ -5,7 +5,7 @@ import {
 	BOSS_MARK,
 	BOSS_MARK_STEP,
 	BULLET_SPEED,
-	BUTTERFLY_SPEED,
+	SPIDER_SPEED,
 	DINO_BULLET_SPEED,
 	DINO_SPEED,
 	DIZZY_SPEED,
@@ -93,53 +93,53 @@ export function initGame({ music }) {
 		k.state('idleDown'),
 	])
 
-	player.onStateEnter('idleDown', () => {
-		player.play('idleDown')
-	})
+	// player.onStateEnter('idleDown', () => {
+	// 	player.play('idleDown')
+	// })
 
-	player.onStateEnter('idleUp', () => {
-		player.play('idleUp')
-	})
+	// player.onStateEnter('idleUp', () => {
+	// 	player.play('idleUp')
+	// })
 
-	player.onStateEnter('idleLeft', () => {
-		player.play('idleLeft')
-	})
+	// player.onStateEnter('idleLeft', () => {
+	// 	player.play('idleLeft')
+	// })
 
-	player.onStateEnter('idleRight', () => {
-		player.play('idleRight')
-	})
+	// player.onStateEnter('idleRight', () => {
+	// 	player.play('idleRight')
+	// })
 
-	player.onStateEnter('walkDown', () => {
-		player.play('walkDown', {
-			onEnd: () => {
-				player.play('idleDown')
-			},
-		})
-	})
+	// player.onStateEnter('walkDown', () => {
+	// 	player.play('walkDown', {
+	// 		onEnd: () => {
+	// 			player.play('idleDown')
+	// 		},
+	// 	})
+	// })
 
-	player.onStateEnter('walkUp', () => {
-		player.play('walkUp', {
-			onEnd: () => {
-				player.play('idleUp')
-			},
-		})
-	})
+	// player.onStateEnter('walkUp', () => {
+	// 	player.play('walkUp', {
+	// 		onEnd: () => {
+	// 			player.play('idleUp')
+	// 		},
+	// 	})
+	// })
 
-	player.onStateEnter('walkLeft', () => {
-		player.play('walkLeft', {
-			onEnd: () => {
-				player.play('idleLeft')
-			},
-		})
-	})
+	// player.onStateEnter('walkLeft', () => {
+	// 	player.play('walkLeft', {
+	// 		onEnd: () => {
+	// 			player.play('idleLeft')
+	// 		},
+	// 	})
+	// })
 
-	player.onStateEnter('walkRight', () => {
-		player.play('walkRight', {
-			onEnd: () => {
-				player.play('idleRight')
-			},
-		})
-	})
+	// player.onStateEnter('walkRight', () => {
+	// 	player.play('walkRight', {
+	// 		onEnd: () => {
+	// 			player.play('idleRight')
+	// 		},
+	// 	})
+	// })
 
 	// Add a screen filter to UI that turns red when player gets hit
 	const dmgFilter = ui.add([
@@ -268,22 +268,6 @@ export function initGame({ music }) {
 		events.push(
 			onKeyDown(dir as Key, () => {
 				if (game.paused) return
-				const left = isKeyDown('a') || isKeyDown('left')
-				const right = isKeyDown('d') || isKeyDown('right')
-				const up = isKeyDown('w') || isKeyDown('up')
-				const down = isKeyDown('s') || isKeyDown('down')
-
-				if (up) {
-					player.enterState('walkUp')
-				} else if (left) {
-					player.enterState('walkLeft')
-				} else if (down) {
-					player.enterState('walkDown')
-				} else if (right) {
-					player.enterState('walkRight')
-				} else {
-					player.enterState(`idle${dir[0].toUpperCase()}${dir.slice(1)}`)
-				}
 
 				player.move(dirs[dir].scale(SPEED))
 				const xMin = player.width / 2
@@ -294,6 +278,23 @@ export function initGame({ music }) {
 				if (player.pos.y < yMin) player.pos.y = yMin
 				if (player.pos.x > xMax) player.pos.x = xMax
 				if (player.pos.y > yMax) player.pos.y = yMax
+
+				const left = isKeyDown('a') || isKeyDown('left')
+				const right = isKeyDown('d') || isKeyDown('right')
+				const up = isKeyDown('w') || isKeyDown('up')
+				const down = isKeyDown('s') || isKeyDown('down')
+
+				if (up) {
+					player.play('walkUp')
+				} else if (left) {
+					player.play('walkLeft')
+				} else if (down) {
+					player.play('walkDown')
+				} else if (right) {
+					player.play('walkRight')
+				} else {
+					player.play(`idle${dir[0].toUpperCase()}${dir.slice(1)}`)
+				}
 			})
 		)
 	}
@@ -353,10 +354,10 @@ export function initGame({ music }) {
 		return skeleton
 	}
 
-	function spawnButterfly() {
-		const butterfly = game.add([
+	function spawnSpider() {
+		const spider = game.add([
 			k.pos(getSpawnPosition({ player })),
-			k.sprite('butterfly'),
+			k.sprite('spider'),
 			k.anchor('center'),
 			k.scale(),
 			k.rotate(0),
@@ -370,53 +371,64 @@ export function initGame({ music }) {
 			'minion',
 		])
 
-		butterfly.onUpdate(() => {
-			butterfly.pos.x += k.dt() * k.rand(-1, 1) * 100
-			butterfly.pos.y += k.dt() * k.rand(-1, 1) * 100
+		spider.onUpdate(() => {
+			spider.pos.x += k.dt() * k.rand(-1, 1) * 100
+			spider.pos.y += k.dt() * k.rand(-1, 1) * 100
 		})
 
-		butterfly.onStateEnter('idle', async () => {
-			await butterfly.wait(2)
-			if (butterfly.state !== 'idle') return
-			butterfly.enterState('attack')
+		spider.onStateEnter('idle', async () => {
+			await spider.wait(2)
+			if (spider.state !== 'idle') return
+			spider.enterState('attack')
+
+			const dir = player.pos.sub(spider.pos).unit()
+			let previousPosition = spider.pos.clone()
+			const direction = getDirection(dir)
+			if (direction === 'up') spider.play('walkUp')
+			else if (direction === 'left') spider.play('walkLeft')
+			else if (direction === 'right') spider.play('walkRight')
+			else if (direction === 'down') spider.play('walkDown')
+			else spider.play('walkDown')
+			spider.move(dir.scale(BAG_SPEED))
+			previousPosition = spider.pos.clone()
 		})
 
-		butterfly.onStateEnter('attack', async () => {
-			const dir = player.pos.sub(butterfly.pos).unit()
+		spider.onStateEnter('attack', async () => {
+			const dir = player.pos.sub(spider.pos).unit()
 			const dest = player.pos.add(dir.scale(100))
-			const dis = player.pos.dist(butterfly.pos)
-			const t = dis / BUTTERFLY_SPEED
+			const dis = player.pos.dist(spider.pos)
+			const t = dis / SPIDER_SPEED
 
 			k.play('wooosh', {
 				detune: k.rand(-300, 300),
 				volume: Math.min(1, 320 / dis),
 			})
 
-			await butterfly.tween(
-				butterfly.pos,
+			await spider.tween(
+				spider.pos,
 				dest,
 				t,
-				p => (butterfly.pos = p),
+				p => (spider.pos = p),
 				k.easings.easeOutQuad
 			)
-			butterfly.enterState('idle')
+			spider.enterState('idle')
 		})
 
-		butterfly.onStateEnter('dizzy', async () => {
-			await butterfly.wait(2)
-			if (butterfly.state !== 'dizzy') return
-			butterfly.enterState('idle')
+		spider.onStateEnter('dizzy', async () => {
+			await spider.wait(2)
+			if (spider.state !== 'dizzy') return
+			spider.enterState('idle')
 		})
 
-		butterfly.onStateUpdate('dizzy', async () => {
-			butterfly.angle += k.dt() * DIZZY_SPEED
+		spider.onStateUpdate('dizzy', async () => {
+			spider.angle += k.dt() * DIZZY_SPEED
 		})
 
-		butterfly.onStateEnd('dizzy', async () => {
-			butterfly.angle = 0
+		spider.onStateEnd('dizzy', async () => {
+			spider.angle = 0
 		})
 
-		return butterfly
+		return spider
 	}
 
 	function spawnDino() {
@@ -642,7 +654,7 @@ export function initGame({ music }) {
 
 	game.loop(0.5, () => {
 		if (isBossFighting) return
-		k.choose([spawnSkeleton, spawnButterfly, spawnDino])()
+		k.choose([spawnSkeleton, spawnSpider, spawnDino])()
 	})
 
 	// When picking up hearts, heal the player
