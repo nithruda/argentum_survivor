@@ -184,7 +184,7 @@ export function initGame({ music }) {
 		player.hurt(k.dt() * enemy.dmg)
 	})
 
-	const hurtSound = k.play('alarm', { loop: false, paused: true })
+	const hurtSound = k.play('10', { loop: false, paused: true })
 
 	player.onCollide('enemy', () => {
 		if (game.paused) return

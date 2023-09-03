@@ -28,8 +28,7 @@ export function initTitle({ music }) {
 		} = k
 
 		music.paused = true
-		// Music deactivated
-		// music = play('music', { loop: true })
+		music = play('music', { loop: true })
 		const scene = add([])
 		scene.add(makeFilter())
 
