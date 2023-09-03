@@ -34,7 +34,7 @@ import { initTrumpet } from './initTrumpet'
 import { getSpawnPosition } from './getSpawnPosition'
 import { initGameOver } from './initGameOver'
 import { getDirection } from './getDirection'
-import { addKaboom } from './addKaboom'
+import { addFlash } from './addFlash'
 
 export function initGame({ music }) {
 	const {
@@ -221,8 +221,10 @@ export function initGame({ music }) {
 		events.push(
 			onKeyDown(dir as Key, () => {
 				if (game.paused) return
-
 				player.move(dirs[dir].scale(SPEED))
+				//fix moving fast when going in diagonals
+				// player.move(dirs[dir].scale(k.dt() * SPEED))
+
 				const xMin = player.width / 2
 				const yMin = player.height / 2
 				const xMax = WIDTH - player.width / 2
@@ -405,16 +407,16 @@ export function initGame({ music }) {
 
 		skeletonWizard.onStateEnter('attack', async () => {
 			game.add([
-				k.rect(24, 8, { radius: 2 }),
-				k.outline(4, colors.black),
+				k.sprite('skeletonWizardMagic', { anim: 'magicAnim' }),
+				k.scale(0.7),
 				k.pos(skeletonWizard.worldPos().add(skeletonWizard.flipX ? -24 : 24, 4)),
 				k.move(skeletonWizard.flipX ? k.LEFT : k.RIGHT, SKELETON_WIZARD_BULLET_SPEED),
-				k.color(colors.grey),
-				k.area(),
+				k.area({ scale: 0.8 }),
 				k.lifespan(10),
 				'enemybullet',
 				{ dmg: 20 },
 			])
+
 			const dis = player.pos.dist(skeletonWizard.pos)
 			k.play('shoot', {
 				detune: k.rand(-300, 300),
@@ -482,9 +484,7 @@ export function initGame({ music }) {
 		await game.wait(2)
 
 		for (const minion of minions) {
-			// Show custom damage sprite or disintegrate the enemy
-			// k.addKaboom(minion.pos)
-			addKaboom(minion.pos)
+			addFlash(minion.pos)
 			minion.destroy()
 		}
 
@@ -722,9 +722,7 @@ export function initGame({ music }) {
 				})
 				this.onDeath(() => {
 					this.destroy()
-					// Show custom damage sprite or disintegrate the enemy
-					// k.addKaboom(this.pos)
-					addKaboom(this.pos)
+					addFlash(this.pos)
 					setScore(s => s + (this.is('boss') ? 2000 : 100))
 					if (score >= bossMark) {
 						bossMark += BOSS_MARK_STEP + 2000
