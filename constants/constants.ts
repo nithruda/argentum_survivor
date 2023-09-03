@@ -13,9 +13,9 @@ export const EXP_BAR_WIDTH = 200
 export const SWORD_SPEED = 80
 export const MAX_SWORDS = 3
 export const BULLET_SPEED = 800
-export const DINO_BULLET_SPEED = 400
+export const SKELETON_WIZARD_BULLET_SPEED = 400
 export const SPIDER_SPEED = 300
-export const DINO_SPEED = 80
+export const SKELETON_WIZARD_SPEED = 80
 export const GIANT_SPEED = 200
 export const BAG_SPEED = 60
 export const SWORD_DMG = 150
@@ -38,7 +38,6 @@ export const colors = {
 }
 
 export const sprites = [
-	'dino',
 	'giant',
 	'hpBar',
 	'expBar',

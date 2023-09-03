@@ -117,6 +117,27 @@ loadSpriteAtlas(`sprites/spider.png`, {
 	},
 })
 
+loadSpriteAtlas(`sprites/skeletonWizard.png`, {
+	skeletonWizard: {
+		x: 0,
+		y: 0,
+		width: 217,
+		height: 207,
+		sliceX: 8,
+		sliceY: 4,
+		anims: {
+			idleDown: { from: 0, to: 0 },
+			idleUp: { from: 8, to: 8 },
+			idleLeft: { from: 16, to: 16 },
+			idleRight: { from: 24, to: 24 },
+			walkDown: { from: 0, to: 7, speed: 14, loop: true },
+			walkUp: { from: 8, to: 15, speed: 14, loop: true },
+			walkLeft: { from: 15, to: 19, speed: 14, loop: true },
+			walkRight: { from: 20, to: 27, speed: 14, loop: true },
+		},
+	},
+})
+
 for (const img of images) {
 	loadSprite(img, `images/${img}.png`)
 }

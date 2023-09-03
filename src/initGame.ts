@@ -6,8 +6,8 @@ import {
 	BOSS_MARK_STEP,
 	BULLET_SPEED,
 	SPIDER_SPEED,
-	DINO_BULLET_SPEED,
-	DINO_SPEED,
+	SKELETON_WIZARD_BULLET_SPEED,
+	SKELETON_WIZARD_SPEED,
 	DIZZY_SPEED,
 	EXP_BAR_WIDTH,
 	GIANT_SPEED,
@@ -92,54 +92,6 @@ export function initGame({ music }) {
 		highlight(),
 		k.state('idleDown'),
 	])
-
-	// player.onStateEnter('idleDown', () => {
-	// 	player.play('idleDown')
-	// })
-
-	// player.onStateEnter('idleUp', () => {
-	// 	player.play('idleUp')
-	// })
-
-	// player.onStateEnter('idleLeft', () => {
-	// 	player.play('idleLeft')
-	// })
-
-	// player.onStateEnter('idleRight', () => {
-	// 	player.play('idleRight')
-	// })
-
-	// player.onStateEnter('walkDown', () => {
-	// 	player.play('walkDown', {
-	// 		onEnd: () => {
-	// 			player.play('idleDown')
-	// 		},
-	// 	})
-	// })
-
-	// player.onStateEnter('walkUp', () => {
-	// 	player.play('walkUp', {
-	// 		onEnd: () => {
-	// 			player.play('idleUp')
-	// 		},
-	// 	})
-	// })
-
-	// player.onStateEnter('walkLeft', () => {
-	// 	player.play('walkLeft', {
-	// 		onEnd: () => {
-	// 			player.play('idleLeft')
-	// 		},
-	// 	})
-	// })
-
-	// player.onStateEnter('walkRight', () => {
-	// 	player.play('walkRight', {
-	// 		onEnd: () => {
-	// 			player.play('idleRight')
-	// 		},
-	// 	})
-	// })
 
 	// Add a screen filter to UI that turns red when player gets hit
 	const dmgFilter = ui.add([
@@ -431,10 +383,10 @@ export function initGame({ music }) {
 		return spider
 	}
 
-	function spawnDino() {
-		const dino = game.add([
+	function spawnSkeletonWizard() {
+		const skeletonWizard = game.add([
 			k.pos(getSpawnPosition({ player })),
-			k.sprite('dino'),
+			k.sprite('skeletonWizard'),
 			k.anchor('center'),
 			k.scale(),
 			k.rotate(0),
@@ -448,59 +400,72 @@ export function initGame({ music }) {
 			'minion',
 		])
 
-		dino.onUpdate(() => {
-			dino.flipX = player.pos.x < dino.pos.x
+		skeletonWizard.onUpdate(() => {
+			skeletonWizard.flipX = player.pos.x < skeletonWizard.pos.x
 		})
 
-		dino.onStateEnter('idle', async () => {
-			await dino.wait(1)
-			if (dino.state !== 'idle') return
-			dino.enterState('attack')
+		skeletonWizard.onStateEnter('idle', async () => {
+			await skeletonWizard.wait(1)
+			if (skeletonWizard.state !== 'idle') return
+			skeletonWizard.enterState('attack')
 		})
 
-		dino.onStateEnter('attack', async () => {
+		skeletonWizard.onStateEnter('attack', async () => {
 			game.add([
 				k.rect(24, 8, { radius: 2 }),
 				k.outline(4, colors.black),
-				k.pos(dino.worldPos().add(dino.flipX ? -24 : 24, 4)),
-				k.move(dino.flipX ? k.LEFT : k.RIGHT, DINO_BULLET_SPEED),
+				k.pos(skeletonWizard.worldPos().add(skeletonWizard.flipX ? -24 : 24, 4)),
+				k.move(skeletonWizard.flipX ? k.LEFT : k.RIGHT, SKELETON_WIZARD_BULLET_SPEED),
 				k.color(colors.grey),
 				k.area(),
 				k.lifespan(10),
 				'enemybullet',
 				{ dmg: 20 },
 			])
-			const dis = player.pos.dist(dino.pos)
+			const dis = player.pos.dist(skeletonWizard.pos)
 			k.play('shoot', {
 				detune: k.rand(-300, 300),
 				volume: Math.min(1, 320 / dis),
 			})
-			await dino.wait(1)
-			if (dino.state !== 'attack') return
-			dino.enterState('move')
+			await skeletonWizard.wait(1)
+			if (skeletonWizard.state !== 'attack') return
+			skeletonWizard.enterState('move')
 		})
 
-		dino.onStateUpdate('move', async () => {
-			const dir = player.pos.sub(dino.pos).unit()
-			dino.move(dir.scale(DINO_SPEED))
-			if (Math.abs(player.pos.y - dino.pos.y) < 50 && player.pos.dist(dino.pos) < 400) {
-				dino.enterState('idle')
+		skeletonWizard.onStateUpdate('move', async () => {
+			const dir = player.pos.sub(skeletonWizard.pos).unit()
+			skeletonWizard.move(dir.scale(SKELETON_WIZARD_SPEED))
+			if (
+				Math.abs(player.pos.y - skeletonWizard.pos.y) < 50 &&
+				player.pos.dist(skeletonWizard.pos) < 400
+			) {
+				skeletonWizard.enterState('idle')
 			}
+
+			let previousPosition = skeletonWizard.pos.clone()
+			const direction = getDirection(dir)
+			if (direction === 'up') skeletonWizard.play('walkUp')
+			else if (direction === 'left') skeletonWizard.play('walkLeft')
+			else if (direction === 'right') skeletonWizard.play('walkRight')
+			else if (direction === 'down') skeletonWizard.play('walkDown')
+			else skeletonWizard.play('walkDown')
+			skeletonWizard.move(dir.scale(BAG_SPEED))
+			previousPosition = skeletonWizard.pos.clone()
 		})
 
-		dino.onStateEnter('dizzy', async () => {
-			await dino.wait(2)
-			if (dino.state !== 'dizzy') return
-			dino.enterState('idle')
+		skeletonWizard.onStateEnter('dizzy', async () => {
+			await skeletonWizard.wait(2)
+			if (skeletonWizard.state !== 'dizzy') return
+			skeletonWizard.enterState('idle')
 		})
-		dino.onStateUpdate('dizzy', async () => {
-			dino.angle += k.dt() * DIZZY_SPEED
+		skeletonWizard.onStateUpdate('dizzy', async () => {
+			skeletonWizard.angle += k.dt() * DIZZY_SPEED
 		})
-		dino.onStateEnd('dizzy', async () => {
-			dino.angle = 0
+		skeletonWizard.onStateEnd('dizzy', async () => {
+			skeletonWizard.angle = 0
 		})
 
-		return dino
+		return skeletonWizard
 	}
 
 	let isBossFighting = false
@@ -654,7 +619,7 @@ export function initGame({ music }) {
 
 	game.loop(0.5, () => {
 		if (isBossFighting) return
-		k.choose([spawnSkeleton, spawnSpider, spawnDino])()
+		k.choose([spawnSkeleton, spawnSpider, spawnSkeletonWizard])()
 	})
 
 	// When picking up hearts, heal the player
