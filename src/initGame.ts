@@ -88,7 +88,7 @@ export function initGame({ music }) {
 		k.sprite('human'),
 		k.anchor('center'),
 		k.area({ scale: 0.8 }),
-		k.health(100),
+		k.health(100000),
 		k.scale(),
 		highlight(),
 		k.state('idleDown'),
@@ -201,6 +201,7 @@ export function initGame({ music }) {
 	})
 
 	player.onDeath(() => {
+		k.play('11')
 		game.paused = true
 		hurtSound.paused = true
 		game.destroy()
@@ -346,7 +347,7 @@ export function initGame({ music }) {
 			const dis = player.pos.dist(spider.pos)
 			const t = dis / SPIDER_SPEED
 
-			k.play('wooosh', {
+			k.play('69', {
 				detune: k.rand(-300, 300),
 				volume: Math.min(1, 320 / dis),
 			})
@@ -418,7 +419,7 @@ export function initGame({ music }) {
 			])
 
 			const dis = player.pos.dist(skeletonWizard.pos)
-			k.play('shoot', {
+			k.play('16', {
 				detune: k.rand(-300, 300),
 				volume: Math.min(1, 320 / dis),
 			})
@@ -490,7 +491,7 @@ export function initGame({ music }) {
 
 		const maxHP = 2000
 		await game.wait(1)
-		k.play('mystic')
+		k.play('2036')
 		music.paused = true
 		music = k.play('music2', { loop: true })
 
@@ -550,7 +551,7 @@ export function initGame({ music }) {
 				})
 			}
 
-			k.play('error', { volume: 0.3 })
+			k.play('251', { volume: 0.3 })
 			await boss.wait(1)
 			boss.enterState('move')
 		})
@@ -583,7 +584,7 @@ export function initGame({ music }) {
 			const dis = player.pos.dist(boss.pos)
 			const t = dis / (GIANT_SPEED * 3)
 
-			k.play('error')
+			k.play('251')
 			await boss.tween(boss.pos, dest, t, p => (boss.pos = p), k.easings.easeOutQuad)
 			boss.enterState('idle')
 		})
@@ -619,7 +620,7 @@ export function initGame({ music }) {
 
 	// When picking up hearts, heal the player
 	player.onCollide('healthPotion', hearth => {
-		k.play('powerUp')
+		k.play('135')
 		player.heal(10)
 		hearth.destroy()
 	})
@@ -769,7 +770,7 @@ export function initGame({ music }) {
 				action()
 				game.paused = false
 				scene.destroy()
-				k.burp()
+				k.play('6')
 			})
 		}
 

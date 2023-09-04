@@ -15,6 +15,7 @@ export function initGuns({ guns, levels, game, toolbar }) {
 			anchor,
 			area,
 			lifespan,
+			play,
 			RIGHT,
 			LEFT,
 		} = k
@@ -37,6 +38,7 @@ export function initGuns({ guns, levels, game, toolbar }) {
 				'bullet',
 				{ dmg: GUN_DMG },
 			])
+			play('2')
 		})
 
 		// TODO: clean
@@ -60,6 +62,7 @@ export function initGuns({ guns, levels, game, toolbar }) {
 					'bullet',
 					{ dmg: GUN_DMG },
 				])
+				play('2')
 			})
 		}
 

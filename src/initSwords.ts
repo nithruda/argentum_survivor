@@ -25,7 +25,7 @@ function initSwords({ swords, levels, toolbar }) {
 			])
 
 			sword.onCollide('enemy', enemy => {
-				play('sword', {
+				play('13', {
 					// Randomly detune the sound effect to add some variation when multiple happening sequentially
 					detune: rand(-300, 300),
 				})

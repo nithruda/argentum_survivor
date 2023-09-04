@@ -29,7 +29,7 @@ export function initTrumpet({ trumpets, levels, game, player, toolbar }) {
 			}
 
 			trumpet.highlight()
-			play('horn')
+			play('19')
 			const effect = player.add([circle(0), timer(), opacity(0.3), color(), z(-100)])
 			effect.onUpdate(() => {
 				const c1 = colors.lightblue
