@@ -38,7 +38,6 @@ export const colors = {
 }
 
 export const sprites = [
-	'apple',
 	'giant',
 	'hpBar',
 	'expBar',

@@ -38,7 +38,9 @@ export function initGuns({ guns, levels, game, toolbar }) {
 				'bullet',
 				{ dmg: GUN_DMG },
 			])
-			play('2')
+			play('2', {
+				detune: k.rand(-200, 200),
+			})
 		})
 
 		// TODO: clean
