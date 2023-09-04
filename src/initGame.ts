@@ -161,7 +161,9 @@ export function initGame({ music }) {
 
 	onCollide('bullet', 'enemy', (bullet, enemy) => {
 		enemy.hurt(bullet.dmg)
-		if (enemy.is('boss')) bullet.destroy()
+		if (enemy.is('boss')) {
+			bullet.destroy()
+		}
 	})
 
 	// The toolbar UI element to show the current levels on all weapons
@@ -184,7 +186,7 @@ export function initGame({ music }) {
 		player.hurt(k.dt() * enemy.dmg)
 	})
 
-	const hurtSound = k.play('10', { loop: false, paused: true })
+	const hurtSound = k.play('10', { detune: k.rand(-300, 300), loop: false, paused: true })
 
 	player.onCollide('enemy', () => {
 		if (game.paused) return
@@ -620,7 +622,9 @@ export function initGame({ music }) {
 
 	// When picking up hearts, heal the player
 	player.onCollide('healthPotion', hearth => {
-		k.play('135')
+		k.play('135', {
+			detune: k.rand(-300, 300),
+		})
 		player.heal(10)
 		hearth.destroy()
 	})
@@ -770,7 +774,9 @@ export function initGame({ music }) {
 				action()
 				game.paused = false
 				scene.destroy()
-				k.play('6')
+				k.play('6', {
+					detune: k.rand(-100, 100),
+				})
 			})
 		}
 
