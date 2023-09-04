@@ -88,7 +88,7 @@ export function initGame({ music }) {
 		k.sprite('human'),
 		k.anchor('center'),
 		k.area({ scale: 0.8 }),
-		k.health(100000),
+		k.health(100),
 		k.scale(),
 		highlight(),
 		k.state('idleDown'),
