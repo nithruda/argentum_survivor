@@ -5,9 +5,6 @@ import {
 	BOSS_MARK,
 	BOSS_MARK_STEP,
 	BULLET_SPEED,
-	SPIDER_SPEED,
-	SKELETON_WIZARD_BULLET_SPEED,
-	SKELETON_WIZARD_SPEED,
 	DIZZY_SPEED,
 	EXP_BAR_WIDTH,
 	GIANT_SPEED,
@@ -16,7 +13,10 @@ import {
 	MAX_EXP_INIT,
 	MAX_EXP_STEP,
 	MAX_HP,
+	SKELETON_WIZARD_BULLET_SPEED,
+	SKELETON_WIZARD_SPEED,
 	SPEED,
+	SPIDER_SPEED,
 	SWORD_SPEED,
 	TOUCH_SPEED,
 	WIDTH,
@@ -24,17 +24,17 @@ import {
 	dirs,
 } from '../constants/constants'
 import { k } from '../constants/k'
+import { addFlash } from './addFlash'
 import { bounce } from './bounce'
+import { getDirection } from './getDirection'
+import { getSpawnPosition } from './getSpawnPosition'
 import { highlight } from './highlight'
+import { initGameOver } from './initGameOver'
+import { initGuns } from './initGuns'
 import { initSwords } from './initSwords'
+import { initTrumpet } from './initTrumpet'
 import { makeFilter } from './makeFilter'
 import { updateToolbar } from './updateToolbar'
-import { initGuns } from './initGuns'
-import { initTrumpet } from './initTrumpet'
-import { getSpawnPosition } from './getSpawnPosition'
-import { initGameOver } from './initGameOver'
-import { getDirection } from './getDirection'
-import { addFlash } from './addFlash'
 
 export function initGame({ music }) {
 	const {
@@ -207,6 +207,8 @@ export function initGame({ music }) {
 		game.paused = true
 		hurtSound.paused = true
 		game.destroy()
+		timerLabel.destroy()
+		setTimer('00:00')
 		initGameOver({ music })
 	})
 
@@ -270,7 +272,7 @@ export function initGame({ music }) {
 			k.timer(),
 			k.color(),
 			bounce(),
-			enemy({ dmg: 50 }),
+			enemy({ dmg: 20 }),
 			'minion',
 		])
 
@@ -313,11 +315,11 @@ export function initGame({ music }) {
 			k.rotate(0),
 			k.area({ scale: 0.8 }),
 			k.state('idle'),
-			k.health(100),
+			k.health(150),
 			k.timer(),
 			k.color(),
 			bounce(),
-			enemy({ dmg: 50 }),
+			enemy({ dmg: 40 }),
 			'minion',
 		])
 
@@ -394,7 +396,7 @@ export function initGame({ music }) {
 			k.health(100),
 			k.color(),
 			bounce(),
-			enemy({ dmg: 50 }),
+			enemy({ dmg: 20 }),
 			'minion',
 		])
 
@@ -509,7 +511,7 @@ export function initGame({ music }) {
 			k.health(maxHP),
 			k.color(),
 			bounce(),
-			enemy({ dmg: 80, exp: 20 }),
+			enemy({ dmg: 50, exp: 20 }),
 			'boss',
 		])
 
@@ -625,7 +627,7 @@ export function initGame({ music }) {
 		k.play('135', {
 			detune: k.rand(-300, 300),
 		})
-		player.heal(10)
+		player.heal(30)
 		hearth.destroy()
 	})
 
@@ -654,7 +656,6 @@ export function initGame({ music }) {
 		const bar = bg.add([k.rect(0, 16, { radius: 8 }), k.fixed(), k.color(color)])
 
 		bar.add([k.pos(0, -22), k.sprite(sprite), k.fixed()])
-
 		bar.onUpdate(() => {
 			bar.width = k.lerp(bar.width, width * getPerc(), k.dt() * 12)
 		})
@@ -670,6 +671,9 @@ export function initGame({ music }) {
 		() => player.hp() / MAX_HP
 	)
 
+	let exp = 0
+	let maxExp = MAX_EXP_INIT
+
 	const expBar = addBar(
 		k.vec2(24, 90),
 		EXP_BAR_WIDTH,
@@ -678,9 +682,11 @@ export function initGame({ music }) {
 		() => exp / maxExp
 	)
 
+	/**
+	 * Score label
+	 */
+
 	let score = 0
-	let exp = 0
-	let maxExp = MAX_EXP_INIT
 
 	function setScore(s: number | ((prev: number) => number)) {
 		score = typeof s === 'number' ? s : s(score)
@@ -704,6 +710,43 @@ export function initGame({ music }) {
 		highlight(),
 	])
 
+	/**
+	 * Timer label
+	 */
+
+	let timer = '00:00'
+
+	const timerLabel = k.add([
+		k.timer(),
+		{
+			value: 0,
+		},
+		k.text(timer),
+		k.anchor('top'),
+		k.pos(k.width() / 2, 24),
+		k.fixed(),
+	])
+
+	timerLabel.loop(1, () => {
+		if (game.paused) return
+		timerLabel.value++
+	})
+
+	timerLabel.onUpdate(() => {
+		if (game.paused) return
+		const minutes = Math.floor(timerLabel.value / 60)
+		const seconds = timerLabel.value % 60
+		timerLabel.text = `${minutes.toString().padStart(2, '0')}:${seconds
+			.toString()
+			.padStart(2, '0')}`
+		setTimer(timerLabel.text)
+	})
+
+	const setTimer = (t: string) => {
+		timerLabel.text = timer + ''
+		timer = t
+	}
+
 	let bossMark = BOSS_MARK
 
 	function enemy(
@@ -714,7 +757,7 @@ export function initGame({ music }) {
 	) {
 		return {
 			id: 'enemy',
-			dmg: opts.dmg ?? 50,
+			dmg: opts.dmg ?? 0,
 			update() {
 				this.color.r = k.lerp(this.color.r, 255, k.dt())
 				this.color.g = k.lerp(this.color.g, 255, k.dt())
