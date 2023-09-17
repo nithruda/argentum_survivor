@@ -3,24 +3,38 @@ import { k } from '../constants/k'
 import { highlight } from './highlight'
 import { updateToolbar } from './updateToolbar'
 
-export function initTrumpet({ trumpets, levels, game, player, toolbar }) {
+export function initStaff({ staffs, levels, game, player, toolbar }) {
 	try {
-		const { pos, sprite, timer, scale, play, circle, wave, z, time, opacity, color } = k
+		const {
+			pos,
+			sprite,
+			timer,
+			scale,
+			play,
+			circle,
+			wave,
+			z,
+			time,
+			opacity,
+			color,
+			rotate,
+		} = k
 
-		trumpets.removeAll()
-		if (levels.trumpet <= 0) return
+		staffs.removeAll()
+		if (levels.staff <= 0) return
 
-		const trumpet = trumpets.add([
-			pos(0, 0),
-			sprite('trumpet'),
+		const staff = staffs.add([
+			pos(-15, -35),
+			sprite('staff'),
 			timer(),
 			scale(),
+			rotate(15),
 			highlight(),
 		])
 
 		const enemies = game.get('enemy')
 
-		trumpet.loop(3, async () => {
+		staff.loop(3, async () => {
 			// TODO: find all enemies within a radius
 			for (const enemy of enemies) {
 				if (enemy.pos.dist(player.pos) <= 240) {
@@ -28,7 +42,7 @@ export function initTrumpet({ trumpets, levels, game, player, toolbar }) {
 				}
 			}
 
-			trumpet.highlight()
+			staff.highlight()
 			play('19')
 			const effect = player.add([circle(0), timer(), opacity(0.3), color(), z(-100)])
 			effect.onUpdate(() => {
@@ -47,6 +61,6 @@ export function initTrumpet({ trumpets, levels, game, player, toolbar }) {
 		updateToolbar({ levels, toolbar })
 	} catch (error) {
 		console.error(error)
-		throw new Error('Something went wrong while trying to init trumpet', error)
+		throw new Error('Something went wrong while trying to init staff', error)
 	}
 }

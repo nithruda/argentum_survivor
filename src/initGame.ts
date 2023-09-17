@@ -4,7 +4,7 @@ import {
 	BAG_SPEED,
 	BOSS_MARK,
 	BOSS_MARK_STEP,
-	BULLET_SPEED,
+	ARROW_SPEED,
 	DIZZY_SPEED,
 	EXP_BAR_WIDTH,
 	GIANT_SPEED,
@@ -13,7 +13,7 @@ import {
 	MAX_EXP_INIT,
 	MAX_EXP_STEP,
 	MAX_HP,
-	SKELETON_WIZARD_BULLET_SPEED,
+	SKELETON_WIZARD_ARROW_SPEED,
 	SKELETON_WIZARD_SPEED,
 	SPEED,
 	SPIDER_SPEED,
@@ -30,9 +30,9 @@ import { getDirection } from './getDirection'
 import { getSpawnPosition } from './getSpawnPosition'
 import { highlight } from './highlight'
 import { initGameOver } from './initGameOver'
-import { initGuns } from './initGuns'
-import { initSwords } from './initSwords'
-import { initTrumpet } from './initTrumpet'
+import { initBow } from './initBow'
+import { initSword } from './initSword'
+import { initStaff } from './initStaff'
 import { makeFilter } from './makeFilter'
 import { updateToolbar } from './updateToolbar'
 
@@ -129,7 +129,6 @@ export function initGame({ music }) {
 		healFilter.opacity = Math.min(0.5, healFilter.opacity + k.dt() * 2.5)
 		// Custom component highlight makes the game objects scale big a bit and then recover to normal
 		hpBar.highlight()
-		expBar.highlight()
 		player.highlight()
 	})
 
@@ -146,23 +145,23 @@ export function initGame({ music }) {
 		swords.angle += k.dt() * swords.speed
 	})
 
-	// Parent game object for all guns
-	const guns = player.add([])
+	// Parent game object for all bows
+	const bows = player.add([])
 
-	// Parent game object for all trumpets
-	const trumpets = player.add([])
+	// Parent game object for all staffs
+	const staffs = player.add([])
 
 	// Current player level on all weapons, start with level 1 on sword
 	const levels = {
 		sword: 1,
-		gun: 0,
-		trumpet: 0,
+		bow: 0,
+		staff: 0,
 	}
 
-	onCollide('bullet', 'enemy', (bullet, enemy) => {
-		enemy.hurt(bullet.dmg)
+	onCollide('arrow', 'enemy', (arrow, enemy) => {
+		enemy.hurt(arrow.dmg)
 		if (enemy.is('boss')) {
-			bullet.destroy()
+			arrow.destroy()
 		}
 	})
 
@@ -176,9 +175,9 @@ export function initGame({ music }) {
 		highlight({ scale: 1.1 }),
 	])
 
-	initSwords({ swords, levels, toolbar })
-	initGuns({ guns, levels, game, toolbar })
-	initTrumpet({ trumpets, levels, game, player, toolbar })
+	initSword({ swords, levels, toolbar })
+	initBow({ bows, levels, game, toolbar })
+	initStaff({ staffs, levels, game, player, toolbar })
 	updateToolbar({ levels, toolbar })
 
 	player.onCollideUpdate('enemy', enemy => {
@@ -197,9 +196,9 @@ export function initGame({ music }) {
 		hurtSound.paused = true
 	})
 
-	player.onCollide('enemybullet', bullet => {
-		player.hurt(bullet.dmg)
-		bullet.destroy()
+	player.onCollide('enemyarrow', arrow => {
+		player.hurt(arrow.dmg)
+		arrow.destroy()
 	})
 
 	player.onDeath(() => {
@@ -415,10 +414,10 @@ export function initGame({ music }) {
 				k.sprite('skeletonWizardMagic', { anim: 'magicAnim' }),
 				k.scale(0.7),
 				k.pos(skeletonWizard.worldPos().add(skeletonWizard.flipX ? -24 : 24, 4)),
-				k.move(skeletonWizard.flipX ? k.LEFT : k.RIGHT, SKELETON_WIZARD_BULLET_SPEED),
+				k.move(skeletonWizard.flipX ? k.LEFT : k.RIGHT, SKELETON_WIZARD_ARROW_SPEED),
 				k.area({ scale: 0.8 }),
 				k.lifespan(10),
-				'enemybullet',
+				'enemyarrow',
 				{ dmg: 20 },
 			])
 
@@ -544,10 +543,10 @@ export function initGame({ music }) {
 					k.outline(4, colors.black),
 					k.anchor('center'),
 					k.area({ scale: 0.5 }),
-					k.move(k.Vec2.fromAngle((360 / num) * i), BULLET_SPEED),
+					k.move(k.Vec2.fromAngle((360 / num) * i), ARROW_SPEED),
 					k.lifespan(10),
 					k.color(),
-					'enemybullet',
+					'enemyarrow',
 					{ dmg: 20 },
 				])
 				b.onUpdate(() => {
@@ -666,7 +665,7 @@ export function initGame({ music }) {
 	const hpBar = addBar(
 		k.vec2(24, 44),
 		HP_BAR_WIDTH,
-		colors.green,
+		colors.red,
 		'hpBar',
 		() => player.hp() / MAX_HP
 	)
@@ -674,13 +673,9 @@ export function initGame({ music }) {
 	let exp = 0
 	let maxExp = MAX_EXP_INIT
 
-	const expBar = addBar(
-		k.vec2(24, 90),
-		EXP_BAR_WIDTH,
-		colors.lightblue,
-		'expBar',
-		() => exp / maxExp
-	)
+	addBar(k.vec2(24, 90), EXP_BAR_WIDTH, colors.green, 'expBar', () => exp / maxExp)
+
+	// addBar(k.vec2(24, 140), MANA_BAR_WIDTH, colors.lightblue, 'manaBar', () => mana / maxMana)
 
 	/**
 	 * Score label
@@ -825,17 +820,17 @@ export function initGame({ music }) {
 
 		addItem(k.width() / 2, 'sword', () => {
 			levels.sword += 1
-			initSwords({ swords, levels, toolbar })
+			initSword({ swords, levels, toolbar })
 		})
 
-		addItem(k.width() / 2 - 200, 'gun', () => {
-			levels.gun += 1
-			initGuns({ guns, levels, game, toolbar })
+		addItem(k.width() / 2 - 200, 'bow', () => {
+			levels.bow += 1
+			initBow({ bows, levels, game, toolbar })
 		})
 
-		addItem(k.width() / 2 + 200, 'trumpet', () => {
-			levels.trumpet += 1
-			initTrumpet({ trumpets, levels, game, player, toolbar })
+		addItem(k.width() / 2 + 200, 'staff', () => {
+			levels.staff += 1
+			initStaff({ staffs, levels, game, player, toolbar })
 		})
 	}
 

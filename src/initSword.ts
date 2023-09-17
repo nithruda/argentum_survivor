@@ -3,7 +3,7 @@ import { k } from '../constants/k'
 import { updateToolbar } from './updateToolbar'
 
 export // Add swords mechanics
-function initSwords({ swords, levels, toolbar }) {
+function initSword({ swords, levels, toolbar }) {
 	try {
 		const { rotate, pos, sprite, area, Rect, rand, vec2, play, anchor } = k
 
@@ -17,9 +17,10 @@ function initSwords({ swords, levels, toolbar }) {
 			// Use another indirect parent game object to manage the swords position to the center
 			const center = swords.add([rotate(i * interval)])
 			const sword = center.add([
-				pos(0, -70),
+				pos(0, -50),
 				sprite('sword'),
 				anchor('center'),
+				rotate(15),
 				area({ shape: new Rect(vec2(0, -10), 5, 40) }),
 				{ dmg: SWORD_DMG },
 			])
