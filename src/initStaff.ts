@@ -32,10 +32,8 @@ export function initStaff({ staffs, levels, game, player, toolbar }) {
 			highlight(),
 		])
 
-		const enemies = game.get('enemy')
-
 		staff.loop(3, async () => {
-			// TODO: find all enemies within a radius
+			const enemies = game.get('enemy')
 			for (const enemy of enemies) {
 				if (enemy.pos.dist(player.pos) <= 240) {
 					enemy.enterState('dizzy')
