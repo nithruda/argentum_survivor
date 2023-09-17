@@ -1,22 +1,28 @@
-import { aseprites, images, sprites } from '../constants/constants'
+import {
+	IMAGES_DIR,
+	SPRITES_DIR,
+	aseprites,
+	images,
+	sprites,
+} from '../constants/constants'
 import { k } from '../constants/k'
 
 export const loadSprites = () => {
 	const { loadSpriteAtlas, loadAseprite, loadSprite } = k
 
 	for (const spr of sprites) {
-		k.loadSprite(spr, `sprites/${spr}.png`)
+		k.loadSprite(spr, `${SPRITES_DIR}${spr}.png`)
 	}
 
 	for (const img of images) {
-		loadSprite(img, `images/${img}.png`)
+		loadSprite(img, `${IMAGES_DIR}${img}.png`)
 	}
 
 	for (const aspr of aseprites) {
-		loadAseprite(aspr, `sprites/${aspr}.png`, `sprites/${aspr}.json`)
+		loadAseprite(aspr, `${SPRITES_DIR}${aspr}.png`, `${SPRITES_DIR}${aspr}.json`)
 	}
 
-	loadSpriteAtlas(`sprites/human.png`, {
+	loadSpriteAtlas(`${SPRITES_DIR}human.png`, {
 		human: {
 			x: 0,
 			y: 0,
@@ -37,7 +43,7 @@ export const loadSprites = () => {
 		},
 	})
 
-	loadSpriteAtlas(`sprites/skeleton.png`, {
+	loadSpriteAtlas(`${SPRITES_DIR}skeleton.png`, {
 		skeleton: {
 			x: 0,
 			y: 0,
@@ -58,7 +64,7 @@ export const loadSprites = () => {
 		},
 	})
 
-	loadSpriteAtlas(`sprites/spider.png`, {
+	loadSpriteAtlas(`${SPRITES_DIR}spider.png`, {
 		spider: {
 			x: 0,
 			y: 0,
@@ -79,7 +85,7 @@ export const loadSprites = () => {
 		},
 	})
 
-	loadSpriteAtlas(`sprites/skeletonWizard.png`, {
+	loadSpriteAtlas(`${SPRITES_DIR}skeletonWizard.png`, {
 		skeletonWizard: {
 			x: 0,
 			y: 0,
@@ -100,7 +106,7 @@ export const loadSprites = () => {
 		},
 	})
 
-	loadSpriteAtlas(`sprites/flash.png`, {
+	loadSpriteAtlas(`${SPRITES_DIR}flash.png`, {
 		flash: {
 			x: 0,
 			y: 0,
@@ -114,7 +120,7 @@ export const loadSprites = () => {
 		},
 	})
 
-	loadSpriteAtlas(`sprites/items2.png`, {
+	loadSpriteAtlas(`${SPRITES_DIR}items2.png`, {
 		cup: {
 			x: 0,
 			y: 0,
@@ -129,7 +135,7 @@ export const loadSprites = () => {
 		},
 	})
 
-	loadSpriteAtlas(`sprites/enemyMagic.png`, {
+	loadSpriteAtlas(`${SPRITES_DIR}enemyMagic.png`, {
 		skeletonWizardMagic: {
 			x: 0,
 			y: 265,
@@ -143,10 +149,10 @@ export const loadSprites = () => {
 		},
 	})
 
-	loadSpriteAtlas(`sprites/sword.png`, {
+	loadSpriteAtlas(`${SPRITES_DIR}sword.png`, {
 		sword: {
 			x: 0,
-			y: 220,
+			y: 218,
 			width: 156,
 			height: 256,
 			sliceX: 6,
@@ -154,10 +160,10 @@ export const loadSprites = () => {
 		},
 	})
 
-	loadSpriteAtlas(`sprites/bow.png`, {
+	loadSpriteAtlas(`${SPRITES_DIR}bow.png`, {
 		bow: {
 			x: 0,
-			y: 205,
+			y: 213,
 			width: 170,
 			height: 256,
 			sliceX: 6,
@@ -165,7 +171,7 @@ export const loadSprites = () => {
 		},
 	})
 
-	loadSpriteAtlas(`sprites/arrow.png`, {
+	loadSpriteAtlas(`${SPRITES_DIR}arrow.png`, {
 		arrow: {
 			x: 0,
 			y: 0,
@@ -176,10 +182,10 @@ export const loadSprites = () => {
 		},
 	})
 
-	loadSpriteAtlas(`sprites/staff.png`, {
+	loadSpriteAtlas(`${SPRITES_DIR}staff.png`, {
 		staff: {
 			x: 0,
-			y: 205,
+			y: 213,
 			width: 170,
 			height: 256,
 			sliceX: 6,

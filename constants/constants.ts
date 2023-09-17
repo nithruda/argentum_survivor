@@ -86,3 +86,6 @@ export const dirs = {
 export const fonts = ['alegreya', 'cardo', 'livvic']
 
 export const images = ['background']
+
+export const SPRITES_DIR = 'sprites/'
+export const IMAGES_DIR = 'images/'
