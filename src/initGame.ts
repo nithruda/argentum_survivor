@@ -196,7 +196,7 @@ export function initGame({ music }) {
 		hurtSound.paused = true
 	})
 
-	player.onCollide('enemyarrow', arrow => {
+	player.onCollide('enemyArrow', arrow => {
 		player.hurt(arrow.dmg)
 		arrow.destroy()
 	})
@@ -417,7 +417,7 @@ export function initGame({ music }) {
 				k.move(skeletonWizard.flipX ? k.LEFT : k.RIGHT, SKELETON_WIZARD_ARROW_SPEED),
 				k.area({ scale: 0.8 }),
 				k.lifespan(10),
-				'enemyarrow',
+				'enemyArrow',
 				{ dmg: 20 },
 			])
 
@@ -546,7 +546,7 @@ export function initGame({ music }) {
 					k.move(k.Vec2.fromAngle((360 / num) * i), ARROW_SPEED),
 					k.lifespan(10),
 					k.color(),
-					'enemyarrow',
+					'enemyArrow',
 					{ dmg: 20 },
 				])
 				b.onUpdate(() => {

@@ -20,7 +20,7 @@ function initSword({ swords, levels, toolbar }) {
 				pos(0, -50),
 				sprite('sword'),
 				anchor('center'),
-				rotate(15),
+				rotate(0),
 				area({ shape: new Rect(vec2(0, -10), 5, 40) }),
 				{ dmg: SWORD_DMG },
 			])

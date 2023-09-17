@@ -146,7 +146,7 @@ export const loadSprites = () => {
 	loadSpriteAtlas(`sprites/sword.png`, {
 		sword: {
 			x: 0,
-			y: 225,
+			y: 220,
 			width: 156,
 			height: 256,
 			sliceX: 6,
