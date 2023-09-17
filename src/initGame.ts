@@ -786,50 +786,61 @@ export function initGame({ music }) {
 	}
 
 	function presentUpgrades() {
-		const scene = k.add([k.fixed(), k.z(100)])
 		game.paused = true
+		const { add, text, fixed, anchor, pos, width, height, z } = k
+		const scene = add([fixed(), z(100)])
+		const centerWidth = width() / 2
+		const centerHeight = height() / 2
 		scene.add(makeFilter())
 		scene.add([
-			k.text('Choose an upgrade'),
-			k.fixed(),
-			k.anchor('center'),
-			k.pos(k.width() / 2, 160),
+			text('Choose an upgrade'),
+			fixed(),
+			anchor('center'),
+			pos(width() / 2, 160),
 		])
 
-		function addItem(x, thing, action) {
+		function addItem(x: number, y: number, item: string, action: () => void) {
+			const { rect, outline, fixed, anchor, pos, scale, area, sprite, play, rand } = k
 			const box = scene.add([
-				k.rect(80, 80, { radius: 4 }),
-				k.outline(4),
-				k.fixed(),
-				k.anchor('center'),
-				k.pos(x, 320),
-				k.scale(2),
-				k.area(),
+				rect(80, 80, { radius: 4 }),
+				outline(4),
+				fixed(),
+				anchor('center'),
+				pos(x, y),
+				scale(2),
+				area(),
 				bounce({ to: 2 }),
 			])
-			box.add([k.sprite(thing), k.fixed(), k.anchor('center')])
+			box.add([
+				sprite(item),
+				fixed(),
+				anchor('center'),
+				pos(0, 0),
+				scale(1.5),
+				bounce({ to: 2 }),
+			])
 			box.onClick(() => {
 				action()
 				game.paused = false
 				scene.destroy()
-				k.play('6', {
-					detune: k.rand(-100, 100),
+				play('6', {
+					detune: rand(-100, 100),
 				})
 			})
 		}
 
-		addItem(k.width() / 2, 'sword', () => {
-			levels.sword += 1
+		addItem(centerWidth - 200, centerHeight, 'sword', () => {
+			levels.sword++
 			initSword({ swords, levels, toolbar })
 		})
 
-		addItem(k.width() / 2 - 200, 'bow', () => {
-			levels.bow += 1
+		addItem(centerWidth, centerHeight, 'bow', () => {
+			levels.bow++
 			initBow({ bows, levels, game, toolbar })
 		})
 
-		addItem(k.width() / 2 + 200, 'staff', () => {
-			levels.staff += 1
+		addItem(centerWidth + 200, centerHeight, 'staff', () => {
+			levels.staff++
 			initStaff({ staffs, levels, game, player, toolbar })
 		})
 	}
