@@ -153,9 +153,9 @@ export function initGame({ music }) {
 
 	// Current player level on all weapons, start with level 1 on sword
 	const levels = {
-		sword: 5,
-		bow: 5,
-		staff: 5,
+		sword: 1,
+		bow: 0,
+		staff: 0,
 	}
 
 	onCollide('arrow', 'enemy', (arrow, enemy) => {
