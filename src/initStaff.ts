@@ -24,7 +24,7 @@ export function initStaff({ staffs, levels, game, player, toolbar }) {
 		if (levels.staff <= 0) return
 
 		const staff = staffs.add([
-			pos(-15, -35),
+			pos(-20, -35),
 			sprite('staff'),
 			timer(),
 			scale(),

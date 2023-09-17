@@ -23,7 +23,7 @@ export function initBow({ bows, levels, game, toolbar }) {
 
 		const rate = levels.bow >= 3 ? 1 / (levels.bow - 1) : 1
 		const bow = bows.add([
-			pos(25, -10),
+			pos(22, -10),
 			sprite('bow'),
 			anchor('center'),
 			rotate(-45),
@@ -34,7 +34,7 @@ export function initBow({ bows, levels, game, toolbar }) {
 			game.add([
 				sprite('arrow'),
 				anchor('center'),
-				pos(bow.worldPos().add(20, 15)),
+				pos(bow.worldPos().add(22, 15)),
 				move(RIGHT, ARROW_SPEED),
 				lifespan(10),
 				area(),
@@ -50,7 +50,7 @@ export function initBow({ bows, levels, game, toolbar }) {
 		// TODO: clean
 		if (levels.bow >= 2) {
 			const bow = bows.add([
-				pos(-25, -10),
+				pos(-22, -10),
 				sprite('bow', { flipX: true }),
 				anchor('center'),
 				rotate(45),
@@ -61,7 +61,7 @@ export function initBow({ bows, levels, game, toolbar }) {
 				game.add([
 					sprite('arrow', { flipX: true }),
 					anchor('center'),
-					pos(bow.worldPos().add(-50, 15)),
+					pos(bow.worldPos().add(-42, 15)),
 					move(LEFT, ARROW_SPEED),
 					lifespan(10),
 					rotate(-45),

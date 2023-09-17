@@ -17,10 +17,10 @@ function initSword({ swords, levels, toolbar }) {
 			// Use another indirect parent game object to manage the swords position to the center
 			const center = swords.add([rotate(i * interval)])
 			const sword = center.add([
-				pos(0, -50),
+				pos(0, -60),
 				sprite('sword'),
 				anchor('center'),
-				rotate(0),
+				rotate(-45),
 				area({ shape: new Rect(vec2(0, -10), 5, 40) }),
 				{ dmg: SWORD_DMG },
 			])
