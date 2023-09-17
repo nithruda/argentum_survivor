@@ -21,6 +21,7 @@ export const GIANT_SPEED = 200
 export const BAG_SPEED = 60
 export const SWORD_DMG = 150
 export const BOW_DMG = 100
+export const STAFF_DMG = 50
 export const DIZZY_SPEED = 1000
 export const MAX_EXP_INIT = 10
 export const MAX_EXP_STEP = 5

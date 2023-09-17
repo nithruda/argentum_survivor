@@ -22,6 +22,7 @@ import {
 	WIDTH,
 	colors,
 	dirs,
+	STAFF_DMG,
 } from '../constants/constants'
 import { k } from '../constants/k'
 import { addFlash } from './addFlash'
@@ -115,7 +116,7 @@ export function initGame({ music }) {
 	// Add some feedbacks when player is hurt showing a short red screen filter effect, and screen shake
 	player.onHurt(() => {
 		dmgFilter.opacity = Math.min(0.5, dmgFilter.opacity + k.dt() * 2.5)
-		k.shake(3)
+		k.shake(1)
 	})
 
 	// Always recover to 0 damage filter
@@ -151,12 +152,14 @@ export function initGame({ music }) {
 	// Parent game object for all staffs
 	const staffs = player.add([])
 
-	// Current player level on all weapons, start with level 1 on sword
+	// Current player level on all weapons
 	const levels = {
-		sword: 1,
+		sword: 0,
 		bow: 0,
 		staff: 0,
 	}
+
+	presentUpgrades()
 
 	onCollide('arrow', 'enemy', (arrow, enemy) => {
 		enemy.hurt(arrow.dmg)
@@ -208,6 +211,9 @@ export function initGame({ music }) {
 		game.destroy()
 		timerLabel.destroy()
 		setTimer('00:00')
+		levels.sword = 0
+		levels.bow = 0
+		levels.staff = 0
 		initGameOver({ music })
 	})
 
@@ -289,6 +295,7 @@ export function initGame({ music }) {
 		})
 
 		skeleton.onStateEnter('dizzy', async () => {
+			skeleton.hurt(STAFF_DMG)
 			await skeleton.wait(2)
 			if (skeleton.state !== 'dizzy') return
 			skeleton.enterState('move')
@@ -366,6 +373,7 @@ export function initGame({ music }) {
 		})
 
 		spider.onStateEnter('dizzy', async () => {
+			spider.hurt(STAFF_DMG)
 			await spider.wait(2)
 			if (spider.state !== 'dizzy') return
 			spider.enterState('idle')
@@ -453,13 +461,16 @@ export function initGame({ music }) {
 		})
 
 		skeletonWizard.onStateEnter('dizzy', async () => {
+			skeletonWizard.hurt(STAFF_DMG)
 			await skeletonWizard.wait(2)
 			if (skeletonWizard.state !== 'dizzy') return
 			skeletonWizard.enterState('idle')
 		})
+
 		skeletonWizard.onStateUpdate('dizzy', async () => {
 			skeletonWizard.angle += k.dt() * DIZZY_SPEED
 		})
+
 		skeletonWizard.onStateEnd('dizzy', async () => {
 			skeletonWizard.angle = 0
 		})
