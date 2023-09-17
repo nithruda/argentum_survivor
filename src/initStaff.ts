@@ -1,4 +1,4 @@
-import { colors } from '../constants/constants'
+import { STAFF_DMG, colors } from '../constants/constants'
 import { k } from '../constants/k'
 import { highlight } from './highlight'
 import { updateToolbar } from './updateToolbar'
@@ -18,6 +18,8 @@ export function initStaff({ staffs, levels, game, player, toolbar }) {
 			opacity,
 			color,
 			rotate,
+			rand,
+			area,
 		} = k
 
 		staffs.removeAll()
@@ -30,6 +32,8 @@ export function initStaff({ staffs, levels, game, player, toolbar }) {
 			scale(),
 			rotate(15),
 			highlight(),
+			area(),
+			{ dmg: STAFF_DMG },
 		])
 
 		staff.loop(3, async () => {
@@ -54,6 +58,13 @@ export function initStaff({ staffs, levels, game, player, toolbar }) {
 			effect.tween(0, 300, 1, radius => (effect.radius = radius))
 			effect.tween(1, 0, 1, opacity => (effect.opacity = opacity))
 			effect.wait(1, () => effect.destroy())
+
+			staff.onCollide('enemy', enemy => {
+				play('13', {
+					detune: rand(-300, 300),
+				})
+				enemy.hurt(staff.dmg)
+			})
 		})
 
 		updateToolbar({ levels, toolbar })

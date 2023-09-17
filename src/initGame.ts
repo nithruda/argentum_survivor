@@ -613,7 +613,6 @@ export function initGame({ music }) {
 			boss.move(dir.scale(GIANT_SPEED))
 		})
 
-		// TODO: clean
 		boss.add([k.rect(60, 12, { radius: 6 }), k.color(colors.black), k.pos(-30, -120)])
 		const hp = boss.add([
 			k.rect(60 - 8, 12 - 8, { radius: 4 }),
