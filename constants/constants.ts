@@ -8,18 +8,19 @@ export const HEIGHT = 1920
 export const TILE_WIDTH = 190
 export const TILE_HEIGHT = 190
 export const MAX_HP = 100
+export const MAX_MANA = 100
 export const HP_BAR_WIDTH = 200
 export const EXP_BAR_WIDTH = 200
 export const SWORD_SPEED = 80
 export const MAX_SWORDS = 3
-export const BULLET_SPEED = 800
-export const SKELETON_WIZARD_BULLET_SPEED = 400
+export const ARROW_SPEED = 800
+export const SKELETON_WIZARD_ARROW_SPEED = 400
 export const SPIDER_SPEED = 300
 export const SKELETON_WIZARD_SPEED = 80
 export const GIANT_SPEED = 200
 export const BAG_SPEED = 60
 export const SWORD_DMG = 150
-export const GUN_DMG = 100
+export const BOW_DMG = 100
 export const DIZZY_SPEED = 1000
 export const MAX_EXP_INIT = 10
 export const MAX_EXP_STEP = 5
@@ -43,8 +44,13 @@ export const sprites = [
 	'expBar',
 	'toolbar',
 	'sword',
-	'gun',
-	'trumpet',
+	'sword2',
+	'sword3',
+	'bow',
+	'bow2',
+	'staff',
+	'staff2',
+	'staff3',
 	'!',
 ]
 

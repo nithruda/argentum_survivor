@@ -142,4 +142,48 @@ export const loadSprites = () => {
 			},
 		},
 	})
+
+	loadSpriteAtlas(`sprites/sword.png`, {
+		sword: {
+			x: 0,
+			y: 225,
+			width: 156,
+			height: 256,
+			sliceX: 6,
+			sliceY: 6,
+		},
+	})
+
+	loadSpriteAtlas(`sprites/bow.png`, {
+		bow: {
+			x: 0,
+			y: 205,
+			width: 170,
+			height: 256,
+			sliceX: 6,
+			sliceY: 6,
+		},
+	})
+
+	loadSpriteAtlas(`sprites/arrow.png`, {
+		arrow: {
+			x: 0,
+			y: 0,
+			width: 293,
+			height: 35,
+			sliceX: 9,
+			sliceY: 1,
+		},
+	})
+
+	loadSpriteAtlas(`sprites/staff.png`, {
+		staff: {
+			x: 0,
+			y: 205,
+			width: 170,
+			height: 256,
+			sliceX: 6,
+			sliceY: 6,
+		},
+	})
 }
